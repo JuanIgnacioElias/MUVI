@@ -9,10 +9,12 @@ class UserModel extends Model
     protected $table = "users";
     protected $primaryKey = "id";
     protected $allowedFields = [
-        "name",
-        "email",
-        "password",
-        "role"
+        'name',
+        'last_name',
+        'email',
+        'password',
+        'cuil',
+        'role'
     ];
     protected $returnType = 'array';
     // 1.1 Definí una variable protegida que contenga un string con el nombre de la tabla en la base de datos

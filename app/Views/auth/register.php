@@ -24,10 +24,36 @@
                         type="text" 
                         name="name" 
                         id="name" 
-                        value="<?= old('name') ?>"
+                        value="<?= esc(old('name')) ?>"
                         required
                     >
                 </div>
+
+                <div>
+                    <label for="last_name">Apellido:</label>
+                    <input
+                        type="text"
+                        name="last_name"
+                        id="last_name"
+                        value="<?= esc(old('last_name')) ?>"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label for="cuil">CUIL (11 dígitos):</label>
+                    <input
+                        type="text"
+                        name="cuil"
+                        id="cuil"
+                        inputmode="numeric"
+                        pattern="[0-9]{11}"
+                        maxlength="11"
+                        value="<?= esc(old('cuil')) ?>"
+                        required
+                    >
+                </div>
+
                 <div>
                     <!-- 1.2 Insertar un campo para ingresar el email -->
                     <label for="email">Email:</label>
