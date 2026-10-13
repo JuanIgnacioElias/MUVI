@@ -10,8 +10,8 @@ class CreatePago extends Migration
     {
         $this->forge->addField([
     'id_pago' => [ 'type'=> 'INT','unsigned'=> true,'auto_increment' => true,],
-            'monto' => ['type'=> 'DECIMAL','constraint' => '10,2',],
-            'moneda' => ['type'=> 'DECIMAL','constraint' => '10,2',],
+            'monto' => ['type'=> 'INT','unsigned'=> true, ],
+            'moneda' => ['type'=> 'VARCHAR','constraint' => '20',],
             'metodo_pago' => [ 'type'=> 'VARCHAR','constraint' => '20',],
             'estado' => ['type'=> 'VARCHAR','constraint' => '20',],
             'created_at' => ['type' => 'DATETIME','null' => true,],
