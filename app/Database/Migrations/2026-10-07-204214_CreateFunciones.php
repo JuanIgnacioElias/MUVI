@@ -19,8 +19,6 @@ class CreateFunciones extends Migration
             'updated_at'   => ['type' => 'DATETIME', 'null' => true],
         ]);
         $this->forge->addKey('id_funcion', true);
-        
-        // Definición de las claves foráneas
         $this->forge->addForeignKey('id_sala', 'salas', 'id_sala', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('id_pelicula', 'peliculas', 'id_pelicula', 'CASCADE', 'CASCADE');
         

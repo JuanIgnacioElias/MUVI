@@ -11,5 +11,5 @@
         <?php endif; ?>
     </div>
 </div>
-
+<a  href= <?=site_url('compras')?>>compras</a>
 <?= view('templates/footer') ?>

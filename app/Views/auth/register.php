@@ -17,7 +17,8 @@
 
             <!-- 1. Crear un formulario con método POST que envíe los datos a la ruta 'register' -->
             <form action="<?= base_url('register') ?>" method="post">
-                <div>
+              <?=  csrf_field() ?>
+            <div>
                     <!-- 1.1 Insertar un campo para ingresar el nombre completo -->
                     <label for="name">Nombre:</label>
                     <input 

@@ -14,6 +14,7 @@
 
             <!-- 1. Crear un formulario con método POST que envíe los datos a la ruta 'login' -->
             <form action="<?= base_url('login') ?>" method="post">
+            <?=  csrf_field() ?>
                 <div>
                     <!-- 1.1 Insertar un campo para el mail -->
                     <label for="email">Correo electrónico:</label>
