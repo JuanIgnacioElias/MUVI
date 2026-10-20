@@ -12,7 +12,10 @@
 
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
-        <a class="navbar-brand mb-0 h1" href="<?= site_url('/') ?>">Mi tienda</a>
+
+        <a class="navbar-brand mb-0 h1" href="<?= site_url('/') ?>">
+            <img src="<?= base_url('assets/img/MUVILOGAZO.png') ?>" alt="Logo" width="120px" height="65px">
+        </a>
         
         <div class="d-flex align-items-center text-white">
             <?php if (session()->get('isLoggedIn')): ?>
