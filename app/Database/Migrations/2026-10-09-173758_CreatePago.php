@@ -25,4 +25,3 @@ class CreatePago extends Migration
         $this->forge->dropTable('pagos'); 
     }
 }
-
