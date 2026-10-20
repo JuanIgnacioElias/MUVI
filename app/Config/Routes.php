@@ -20,6 +20,26 @@ $routes->get('/logout', 'Auth::logout');
 $routes->post('salir', 'Auth::salir', ['filter' => 'auth']);
 $routes->get('panel', 'Panel::index', ['filter' => 'auth']);
 
+// --- RUTAS PROTEGIDAS POR ROL ---
+
+// Solo accesibles por el ADMINISTRADOR
+$routes->group('admin', ['filter' => 'verificarRol:ADMINISTRADOR'], function($routes) {
+    $routes->get('dashboard', 'AdminController::index');
+    $routes->get('usuarios', 'AdminController::listarUsuarios'); // Aquí podrías crear Empleados
+});
+
+// Accesibles por EMPLEADOS y también por el ADMINISTRADOR
+$routes->group('empleado', ['filter' => 'verificarRol:EMPLEADO,ADMINISTRADOR'], function($routes) {
+    $routes->get('panel', 'EmpleadoController::index');
+    $routes->get('pedidos', 'PedidosController::listar');
+});
+
+// Accesibles por CLIENTES y roles superiores si lo desean
+$routes->group('cliente', ['filter' => 'verificarRol:CLIENTE,EMPLEADO,ADMINISTRADOR'], function($routes) {
+    $routes->get('mi-cuenta', 'ClienteController::index');
+});
+
+
 $routes->group('compras', ['filter' => 'auth'], static function ($routes) {
     $routes->get('', 'Compras::index'); // R
     $routes->get('nuevo', 'Compras::nuevo'); // C (formulario)
