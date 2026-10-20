@@ -10,7 +10,6 @@ class ComboCompraModel extends Model
     protected $primaryKey       = 'id_compra'; 
     protected $returnType       = 'array';
     protected $allowedFields    = ['id_compra', 'id_combo', 'estado_entrega'];
-    // Configuración de tiempos
     protected $useTimestamps    = true;
     protected $createdField     = 'created_at';
     protected $updatedField     = ''; 

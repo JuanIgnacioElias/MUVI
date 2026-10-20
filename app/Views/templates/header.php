@@ -6,7 +6,7 @@
     <title><?= esc($titulo ?? 'Inicio') ?></title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/hedfoot.css') ?>">
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
 

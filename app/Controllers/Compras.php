@@ -13,7 +13,6 @@ class Compras extends BaseController
  // R: listado
  public function index() 
     { 
-        // Cambiado 'nombre' por 'fecha_compra' o 'id_compra' ya que 'nombre' no existe
         return view('compras/index', [ 
             'compras' => $this->compras->orderBy('fecha_compra', 'DESC')->findAll(), 
         ]); 
@@ -28,7 +27,6 @@ class Compras extends BaseController
     // C: recibe el formulario y guarda 
     public function guardar() 
     { 
-        // Campos ajustados a la migración
         $datos = $this->request->getPost(['total', 'estado', 'fecha_compra', 'codigo_qr']); 
 
         if (! $this->compras->insert($datos)) { 
@@ -50,7 +48,6 @@ class Compras extends BaseController
     { 
         $this->buscar($id_compra); 
         
-        // Campos ajustados a la migración
         $datos = $this->request->getPost(['total', 'estado', 'fecha_compra', 'codigo_qr']); 
 
         if (! $this->compras->update($id_compra, $datos)) { 
