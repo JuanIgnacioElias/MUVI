@@ -91,7 +91,15 @@ class Auth extends BaseController
                 'isLoggedIn' => true
             ]);
 
-            return redirect()->to('/'); // 4.9 Redirigí al usuario a la página principal
+            switch ($user['role']) {
+                case 'ADMINISTRADOR':
+                    return redirect()->to('/admin/dashboard');
+                case 'EMPLEADO':
+                    return redirect()->to('/empleado/panel');
+                case 'CLIENTE':
+                default:
+                    return redirect()->to('/cliente/mi-cuenta');
+            }
         }
 
         return redirect()->back()->withInput()->with('error', 'Correo o contraseña incorrectos.');
