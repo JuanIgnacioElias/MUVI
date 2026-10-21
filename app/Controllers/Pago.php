@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Models\PagoModel;
 use CodeIgniter\API\ResponseTrait;
 
-class PagoController extends BaseController
+class Pago extends BaseController
 {
     use ResponseTrait;
 
@@ -35,7 +35,7 @@ class PagoController extends BaseController
         return $this->respond($pago, 200);
     }
 
-    //REGISTRAR UN NUEVO PAGO
+    // REGISTRAR UN NUEVO PAGO
     public function create()
     {
         // Recolectamos los datos exactos que permite tu modelo

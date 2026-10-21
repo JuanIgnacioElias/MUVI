@@ -35,7 +35,7 @@ class ComboController extends BaseController
     //REGISTRAR UN NUEVO COMBO
     public function create()
     {
-        // Mapeamos los datos
+        // Mapeamos los datos a los campos 
         $data = [
             'comida' => $this->request->getVar('comida'),
             'bebida' => $this->request->getVar('bebida'),

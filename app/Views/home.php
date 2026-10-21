@@ -12,4 +12,5 @@
     </div>
 </div>
 <a  href= <?=site_url('compras')?>>compras</a>
+<a  href= <?=site_url('Pago')?>>Pago</a>
 <?= view('templates/footer') ?>
