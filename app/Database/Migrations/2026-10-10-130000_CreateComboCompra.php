@@ -30,7 +30,7 @@ class CreateComboCompra extends Migration
         $this->forge->addForeignKey(
             'id_compra',       // Campo local
             'compras',         // Tabla destino
-            'id',                  // Campo destino
+            'id_compra',                  // Campo destino
             'CASCADE',             // Al actualizar (onUpdate)
             'CASCADE'              // Al eliminar (onDelete)
         );
@@ -38,7 +38,7 @@ class CreateComboCompra extends Migration
         $this->forge->addForeignKey(
             'id_combo',            // Campo local
             'combo',              // Tabla destino
-            'id',                  // Campo destino
+            'id_combo',                  // Campo destino
             'CASCADE',             // Al actualizar
             'CASCADE'              // Al eliminar
         );

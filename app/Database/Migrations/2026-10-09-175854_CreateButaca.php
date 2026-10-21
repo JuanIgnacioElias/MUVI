@@ -13,14 +13,14 @@ class CreateButaca extends Migration
         'posicionX' => ['type'=> 'VARCHAR','constraint' => '2',],
         'posicionY' => ['type'=> 'INT',],
             'disponibilidad' => ['type'=> 'BOOLEAN',],
-            'id_entrada' => ['type'=> 'INT','unsigned'=> true, ],
+            'id_compra' => ['type'=> 'INT','unsigned'=> true, ],
             'id_sala' => ['type'=> 'INT','unsigned'   => true,],
             'created_at' => ['type' => 'DATETIME','null' => true,],
             'updated_at' => ['type' => 'DATETIME','null' => true,],
         ]);
 
         $this->forge->addKey('id_butaca', true);
-        $this->forge->addForeignKey('id_entrada', 'entradas', 'id_entrada', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('id_compra', 'compras', 'id_compra', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('id_sala', 'salas', 'id_sala', 'CASCADE', 'CASCADE');
         $this->forge->createTable('butacas');
     }
