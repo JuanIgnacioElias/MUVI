@@ -94,4 +94,9 @@ class ButacaController extends BaseController
             'message' => 'Butaca removida del mapa de la sala correctamente.'
         ], 200);
     }
+    public function mostrarPantalla()
+{
+    return view('butacas/index'); 
 }
+}
+

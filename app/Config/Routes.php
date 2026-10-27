@@ -52,6 +52,11 @@ $routes->group('compras', ['filter' => 'auth'], static function ($routes) {
    $routes->post('/Pago', 'pago::form');
    $routes->get('pago/nuevo', 'Pago::nuevo');
 $routes->post('pago/guardarWeb', 'Pago::guardarWeb');
+$routes->get('sala', 'ButacaController::mostrarPantalla');
+$routes->get('butaca','ButacaController::mostrarPantalla');
+$routes->resource('butacacontroller', ['controller' => 'App\Controllers\ButacaController']);
+
+
 
 
 
