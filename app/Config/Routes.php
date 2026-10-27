@@ -6,48 +6,57 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 
-
 $routes->get('/', 'Home::index');
 
-$routes->get('/register', 'Auth::register');
-$routes->post('/register', 'Auth::processRegister');
+// Autenticación
+$routes->get('register', 'Auth::register');
+$routes->post('register', 'Auth::processRegister');
 
-$routes->get('/login', 'Auth::login');
-$routes->post('/login', 'Auth::processLogin');
+$routes->get('login', 'Auth::login');
+$routes->post('login', 'Auth::processLogin');
 
-$routes->get('/logout', 'Auth::logout');
+$routes->get('logout', 'Auth::logout', ['filter' => 'auth']);
 
-$routes->post('salir', 'Auth::salir', ['filter' => 'auth']);
-$routes->get('panel', 'Panel::index', ['filter' => 'auth']);
-
-// --- RUTAS PROTEGIDAS POR ROL ---
-
-// Solo accesibles por el ADMINISTRADOR
-$routes->group('admin', ['filter' => 'verificarRol:ADMINISTRADOR'], function($routes) {
+// Administrador
+$routes->group('admin', [
+    'filter' => 'verificarRol:ADMINISTRADOR'
+], static function ($routes) {
     $routes->get('dashboard', 'AdminController::index');
-    $routes->get('usuarios', 'AdminController::listarUsuarios'); // Aquí podrías crear Empleados
+    $routes->get('usuarios', 'AdminController::listarUsuarios');
+    $routes->post(
+        'usuarios/actualizar-rol',
+        'AdminController::actualizarRol'
+    );
 });
 
-// Accesibles por EMPLEADOS y también por el ADMINISTRADOR
-$routes->group('empleado', ['filter' => 'verificarRol:EMPLEADO,ADMINISTRADOR'], function($routes) {
+// Empleado y administrador
+$routes->group('empleado', [
+    'filter' => 'verificarRol:EMPLEADO,ADMINISTRADOR'
+], static function ($routes) {
     $routes->get('panel', 'EmpleadoController::index');
     $routes->get('pedidos', 'PedidosController::listar');
 });
 
-// Accesibles por CLIENTES y roles superiores si lo desean
-$routes->group('cliente', ['filter' => 'verificarRol:CLIENTE,EMPLEADO,ADMINISTRADOR'], function($routes) {
+// Cliente
+$routes->group('cliente', [
+    'filter' => 'verificarRol:CLIENTE'
+], static function ($routes) {
     $routes->get('mi-cuenta', 'ClienteController::index');
 });
 
+// Compras: cada acción también valida el rol y la propiedad
+// de la compra dentro del controlador.
+$routes->group('compras', [
+    'filter' => 'verificarRol:CLIENTE,EMPLEADO,ADMINISTRADOR'
+], static function ($routes) {
+    $routes->get('', 'Compras::index');
+    $routes->get('nuevo', 'Compras::nuevo');
+    $routes->post('guardar', 'Compras::guardar');
+    $routes->get('editar/(:num)', 'Compras::editar/$1');
+    $routes->post('actualizar/(:num)', 'Compras::actualizar/$1');
+    $routes->post('eliminar/(:num)', 'Compras::eliminar/$1');
+});
 
-$routes->group('compras', ['filter' => 'auth'], static function ($routes) {
-    $routes->get('', 'Compras::index'); // R
-    $routes->get('nuevo', 'Compras::nuevo'); // C (formulario)
-    $routes->post('guardar', 'Compras::guardar'); // C (guarda)
-    $routes->get('editar/(:num)', 'Compras::editar/$1'); // U (formulario)
-    $routes->post('actualizar/(:num)', 'Compras::actualizar/$1'); // U (guarda)
-    $routes->post('eliminar/(:num)', 'Compras::eliminar/$1'); // D
-   });
    $routes->get('/Pago', 'pago::index');
    $routes->post('/Pago', 'pago::form');
    $routes->get('pago/nuevo', 'Pago::nuevo');
