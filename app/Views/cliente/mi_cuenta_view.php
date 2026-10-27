@@ -23,7 +23,7 @@ $session = session();
 
     <div class="card">
         <!-- 2. Traemos los datos directo del objeto usando sus métodos orientados a objetos -->
-        <h1>¡Hola, <?php echo $session->get('name'); ?> <?php echo $session->get('last_name'); ?>! 👋</h1>
+        <h1>¡Hola, <?= esc(session()->get('name')) ?> <?= esc(session()->get('last_name')) ?>!</h1>
         <p>Bienvenido a tu panel de usuario.</p>
         <hr>
         <p><strong>Tu Email:</strong> <?php echo $session->get('email'); ?></p>

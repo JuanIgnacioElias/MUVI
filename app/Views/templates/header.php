@@ -30,6 +30,7 @@
                 <a href="<?= site_url('login') ?>" class="btn btn-primary btn-sm me-2">Ingresar</a>
                 <a href="<?= site_url('register') ?>" class="btn btn-primary btn-sm">Registrarse</a>
             <?php endif; ?>
+            <a href="<?= site_url('/cliente/mi-cuenta') ?>"><img src="<?= base_url('assets/img/userimage.png') ?>" alt="userlogo" width="50px" height="50px"></a>
         </div>
 
     </div>

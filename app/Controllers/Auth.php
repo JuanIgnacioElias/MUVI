@@ -38,10 +38,10 @@ class Auth extends BaseController
         $userModel = new UserModel();
 
         $userModel->insert([
-            'name' => trim($this->request->getPost('name')),
+            'name'      => trim($this->request->getPost('name')),
             'last_name' => trim($this->request->getPost('last_name')),
-            'email' => trim($this->request->getPost('email')),
-            'password' => password_hash(
+            'email'     => trim($this->request->getPost('email')),
+            'password'  => password_hash(
                 $this->request->getPost('password'),
                 PASSWORD_DEFAULT
             ),
@@ -83,15 +83,18 @@ class Auth extends BaseController
 
         if ($user && password_verify($password, $user['password'])) { // 4.4 Verificá que la contraseña coincida con la almacenada en la base de datos
             
+            session()->regenerate(true);
+
             session()->set([
-                'id'         => $user['id'], // 4.5 Asigná el id del usuario
-                'name'       => $user['name'], // 4.6 Asigná el nombre del usuario
-                'email'      => $user['email'], // 4.7 Asigná el email del usuario
-                'role'       => $user['role'], // 4.8 Asigná el rol del usuario
-                'isLoggedIn' => true
+                'id'         => $user['id'],
+                'name'       => $user['name'],
+                'last_name'  => $user['last_name'],
+                'email'      => $user['email'],
+                'role'       => strtoupper($user['role']),
+                'isLoggedIn' => true,
             ]);
 
-            switch ($user['role']) {
+            switch (strtoupper($user['role'])) {
                 case 'ADMINISTRADOR':
                     return redirect()->to('/admin/dashboard');
                 case 'EMPLEADO':
@@ -99,7 +102,7 @@ class Auth extends BaseController
                 case 'CLIENTE':
                 default:
                     return redirect()->to('/cliente/mi-cuenta');
-            }
+            }            
         }
 
         return redirect()->back()->withInput()->with('error', 'Correo o contraseña incorrectos.');
@@ -113,6 +116,7 @@ class Auth extends BaseController
         */
 
         session()->destroy();
-        return redirect()->to('/'); // 5.1 Redirigí al usuario a la página principal
+        return redirect()->to('/')
+            ->with('exito', 'Cerraste sesión correctamente.');     // 5.1 Redirigí al usuario a la página principal
     }
 }

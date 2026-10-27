@@ -11,12 +11,23 @@ class Compras extends BaseController
             $this->compras = new CompraModel(); 
         } 
  // R: listado
- public function index() 
-    { 
-        return view('compras/index', [ 
-            'compras' => $this->compras->orderBy('fecha_compra', 'DESC')->findAll(), 
-        ]); 
-    } 
+    public function index()
+    {
+        $rol = session()->get('role');
+
+        $builder = $this->compras
+            ->orderBy('fecha_compra', 'DESC');
+
+        if ($rol === 'CLIENTE') {
+            $builder->where('user_id', session()->get('id'));
+        } elseif (! in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true)) {
+            return redirect()->to('/login');
+        }
+
+        return view('compras/index', [
+            'compras' => $builder->findAll(),
+        ]);
+    }
 
     // C: formulario vacío 
     public function nuevo() 

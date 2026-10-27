@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Filters;
-
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -13,22 +11,43 @@ class RoleFilter implements FilterInterface
         $session = session();
 
         // 1. Verificar sesión activa
-        if (!$session->has('isLoggedIn')) {
-            return redirect()->to('/login')->with('error', 'Debes iniciar sesión.');
+        if (
+            ! $session->get('isLoggedIn') ||
+            ! $session->get('id')
+        ) {
+            return redirect()->to('/login')
+                ->with('error', 'Iniciá sesión para continuar.');
         }
-
-        // 2. Obtener el rol guardado (vendrá como 'CLIENTE', 'ADMINISTRADOR', etc.)
-        $rolUsuario = $session->get('role'); 
-
-        // 3. Validar contra los argumentos permitidos pasados a mayúsculas
-        if (!empty($arguments)) {
-            $rolesPermitidos = array_map('strtoupper', $arguments);
-
-            if (!in_array($rolUsuario, $rolesPermitidos)) {
-                return redirect()->to('/dashboard')->with('error', 'No tienes permisos.');
-            }
+        $rol = strtoupper((string) $session->get('role'));
+        $permitidos = array_map(
+            'strtoupper',
+            $arguments ?? []
+        );
+        if (! in_array($rol, $permitidos, true)) {
+            return redirect()->to($this->panelSegunRol($rol))
+                ->with('error', 'No tenés permiso para acceder a esa sección.');
+        }
+        return null;
+    }
+    private function panelSegunRol(string $rol): string
+    {
+        switch ($rol) {
+            case 'ADMINISTRADOR':
+                return '/admin/dashboard';
+            case 'EMPLEADO':
+                return '/empleado/panel';
+            case 'CLIENTE':
+                return '/cliente/mi-cuenta';
+            default:
+                session()->destroy();
+                return '/login';
         }
     }
-
-    public function after(RequestInterface $request, ResponseInterface $response, $arguments = null) {}
+    public function after(
+        RequestInterface $request,
+        ResponseInterface $response,
+        $arguments = null
+    ) {
+        // Sin acciones posteriores.
+    }
 }
