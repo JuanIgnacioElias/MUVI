@@ -1,5 +1,4 @@
 <?= view('templates/header') ?>
-
 <div class="row my-5">
     <div class="col text-center">
         <?php if (!session()->get('isLoggedIn')): ?>

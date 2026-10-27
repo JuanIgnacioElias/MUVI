@@ -15,15 +15,44 @@ class Pago extends BaseController
     {
         $this->pagoModel = new PagoModel();
     }
-
-    //  OBTENER TODOS LOS PAGOS
+    // VISTAS WEB (Para ver e interactuar en el navegador)
+    //Muestra el historial visual 
     public function index()
+    {
+        $data['pagos'] = $this->pagoModel->findAll();
+        return view('Pago/index', $data); 
+    }
+    // Muestra el formulario para crear un pago
+    public function nuevo()
+    {
+        return view('Pago/form');
+    }
+
+    // Procesa el formulario web y redirige
+    public function guardarWeb()
+    {
+        $data = [
+            'monto'       => $this->request->getPost('monto'),
+            'moneda'      => $this->request->getPost('moneda'),
+            'metodo_pago' => $this->request->getPost('metodo_pago'),
+            'estado'      => $this->request->getPost('estado'),
+        ];
+
+        if ($this->pagoModel->insert($data)) {
+            return redirect()->to(base_url('pago'))->with('success', '¡Pago registrado con éxito!');
+        }
+
+        return redirect()->back()->withInput()->with('errors', $this->pagoModel->errors());
+    }
+
+    // OBTENER TODOS LOS PAGOS
+    public function apiIndex()
     {
         $pagos = $this->pagoModel->findAll();
         return $this->respond($pagos, 200);
     }
 
-    //  OBTENER UN PAGO POR SU ID
+    // OBTENER UN PAGO POR SU ID
     public function show($id = null)
     {
         $pago = $this->pagoModel->find($id);
@@ -38,7 +67,6 @@ class Pago extends BaseController
     // REGISTRAR UN NUEVO PAGO
     public function create()
     {
-        // Recolectamos los datos exactos que permite tu modelo
         $data = [
             'monto'       => $this->request->getVar('monto'),
             'moneda'      => $this->request->getVar('moneda'),
@@ -46,34 +74,28 @@ class Pago extends BaseController
             'estado'      => $this->request->getVar('estado'),
         ];
 
-        // Se ejecuta la inserción y CodeIgniter valida automáticamente las reglas
         if (!$this->pagoModel->insert($data)) {
-            // Si falla, devuelve error
             return $this->respond(['errors' => $this->pagoModel->errors()], 400);
         }
 
-        // Si todo sale bien, CodeIgniter ya habrá guardado el "created_at" solo
         return $this->respond([
             'status'  => 201,
             'message' => 'Pago registrado con éxito.',
-            'id_pago' => $this->pagoModel->getInsertID() // Retorna el ID generado
+            'id_pago' => $this->pagoModel->getInsertID()
         ], 201);
     }
 
-    //  ACTUALIZA EL ESTADO DE UN PAGO (Ej: De 'pendiente' a 'aprobado')
+    // ACTUALIZA EL ESTADO DE UN PAGO
     public function update($id = null)
     {
-        // Verificamos si el pago existe
         if (!$this->pagoModel->find($id)) {
             return $this->failNotFound('No se puede actualizar. El pago no existe.');
         }
 
-        // Capturamos solo el campo estado 
         $data = [
             'estado' => $this->request->getVar('estado')
         ];
 
-        // Validamos y actualizamos. Esto actualizará automáticamente el "updated_at"
         if (!$this->pagoModel->update($id, $data)) {
             return $this->respond(['errors' => $this->pagoModel->errors()], 400);
         }

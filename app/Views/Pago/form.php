@@ -8,9 +8,9 @@
 
     <h2>Registrar Pago</h2>
 
-    <!-- El action apunta directo a la ruta de tu controlador -->
-    <form action="http://localhost:8080/pago" method="POST">
-        
+    <form action="http://localhost:8080/index.php/pago/guardarWeb" method="POST">
+    <?= csrf_field() ?>
+ 
         <p>
             <label>Monto:</label><br>
             <input type="number" name="monto" required>
@@ -27,15 +27,11 @@
         </p>
 
         <p>
-            <label>Estado:</label><br>
-            <select name="estado" required>
-                <option value="Pendiente">Pendiente</option>
-                <option value="Aprobado">Aprobado</option>
-            </select>
+        <input type="hidden" name="estado" value="Pendiente">
         </p>
 
         <button type="submit">Guardar Pago</button>
-        <a href="index.php">Volver atrás</a>
+        <a href="http://localhost:8080/index.php/Pago">Volver atrás</a>
     </form>
 
 </body>

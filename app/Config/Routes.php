@@ -48,8 +48,15 @@ $routes->group('compras', ['filter' => 'auth'], static function ($routes) {
     $routes->post('actualizar/(:num)', 'Compras::actualizar/$1'); // U (guarda)
     $routes->post('eliminar/(:num)', 'Compras::eliminar/$1'); // D
    });
-   $routes->get('/Pago', 'Pago::index');
-   $routes->post('/Pago', 'Pago::form');
+   $routes->get('/Pago', 'pago::index');
+   $routes->post('/Pago', 'pago::form');
+   $routes->get('pago/nuevo', 'Pago::nuevo');
+$routes->post('pago/guardarWeb', 'Pago::guardarWeb');
+
+
+
+
+
 // 1. RUTAS DE AUTENTICACIÓN DE USUARIO
     // 1.1 Definí la ruta para mostrar el formulario de registro
     // 1.2 Definí la ruta para procesar el formulario de registro

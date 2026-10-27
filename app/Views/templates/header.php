@@ -10,6 +10,7 @@
 </head>
 <body class="bg-light d-flex flex-column min-vh-100">
 
+<header>
 <nav class="navbar navbar-dark bg-dark mb-4">
     <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
 
@@ -22,11 +23,12 @@
                 <span class="me-3 small">Bienvenido <?= esc(strtok(session()->get('name') ?? '', ' ')) ?>!!!</span>
                 <a href="<?= site_url('logout') ?>" class="btn btn-outline-danger btn-sm">Cerrar Sesión</a>
             <?php else: ?>
-                <a href="<?= site_url('login') ?>" class="btn btn-outline-light btn-sm me-2">Ingresar</a>
+                <a href="<?= site_url('login') ?>" class="btn btn-primary btn-sm">Ingresar </a>
                 <a href="<?= site_url('register') ?>" class="btn btn-primary btn-sm">Registrarse</a>
             <?php endif; ?>
         </div>
     </div>
 </nav>
+</header>
 
 <div class="container flex-grow-1">

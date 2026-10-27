@@ -1,48 +1,48 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Lista de Pagos</title>
-</head>
-<body>
 
-    <h2>Historial de Pagos</h2>
-    <!-- Botón para ir al formulario -->
-    <a href="form.php">Registrar Nuevo Pago</a>
-    <br><br>
-
-    <table border="1" cellpadding="10" cellspacing="0">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Monto</th>
-                <th>Moneda</th>
-                <th>Método</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Conexión simple a la API para traer los datos
-            $json = file_get_contents('http://localhost:8080/pago');
-            $pagos = json_decode($json, true);
-
-            if (!empty($pagos)) {
-                foreach ($pagos as $pago) {
-                    echo "<tr>";
-                    echo "<td>" . $pago['id_pago'] . "</td>";
-                    echo "<td>" . $pago['monto'] . "</td>";
-                    echo "<td>" . $pago['moneda'] . "</td>";
-                    echo "<td>" . $pago['metodo_pago'] . "</td>";
-                    echo "<td>" . $pago['estado'] . "</td>";
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='5'>No hay pagos grabados.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-
-</body>
-</html>
+    <?= view('templates/header') ?>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>💳 Historial de Pagos</h1>
+            <a href="<?php echo base_url('pago/nuevo'); ?>" class="btn btn-primary">Registrar Nuevo Pago</a>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="card-title mb-0">Pagos Registrados</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Monto</th>
+                                <th>Moneda</th>
+                                <th>Método</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (!empty($pagos)): foreach ($pagos as $pago): ?>
+                                <tr>
+                                    <td><?= $pago['id_pago'] ?></td>
+                                    <td>$<?= number_format($pago['monto'], 2) ?></td>
+                                    <td><?= esc($pago['moneda']) ?></td>
+                                    <td><?= esc($pago['metodo_pago']) ?></td>
+                                    <td>
+                                        <span class="badge <?= $pago['estado'] === 'Aprobado' ? 'bg-success' : 'bg-warning text-dark' ?>">
+                                            <?= esc($pago['estado']) ?>
+                                        </span>
+                                    </td>
+                                </tr>
+                            <?php endforeach; else: ?>
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted">No hay pagos registrados aún.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?= view('templates/footer') ?><    
