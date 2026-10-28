@@ -55,9 +55,46 @@ footer {
   padding: 20px 30px;
   font-size: 14px;
 }
-.navbar.bg-dark {
+.bg-dark {
   background-color: #0d0d0d !important;
 }
 .custom-nav-link:hover {
   color: #f1c40f !important; 
+}
+.banner-muvi {
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+  text-align: center;
+}
+.contenedor-peliculas {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.tarjeta-pelicula {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.poster {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tarjeta-pelicula h3 {
+  font-size: 0.95rem;
+  margin-top: 10px;
+  font-weight: bold;
 }

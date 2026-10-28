@@ -57,8 +57,8 @@ $routes->group('compras', [
     $routes->post('eliminar/(:num)', 'Compras::eliminar/$1');
 });
 
-   $routes->get('/Pago', 'pago::index');
-   $routes->post('/Pago', 'pago::form');
+   $routes->get('/pago', 'pago::index');
+   $routes->post('/pago', 'pago::form');
    $routes->get('pago/nuevo', 'Pago::nuevo');
 $routes->post('pago/guardarWeb', 'Pago::guardarWeb');
 $routes->get('sala', 'ButacaController::mostrarPantalla');
