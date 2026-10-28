@@ -9,7 +9,7 @@
 
 </head>
 <body>
-
+    <?= view('templates/header') ?>
     <h1>Elige tus asientos</h1>
     <p>Sala del Cine</p>
 
@@ -81,13 +81,13 @@
         }
                 renderizarSala(butacas);
                 
-            } catch (error) {
+                } catch (error) {
                 console.error("Error al obtener las butacas:", error);
                 // Si tu servidor está apagado o hay un problema de red
                 sala.innerHTML = '<p style="color: #FFFFFF; background: rgba(255,0,0,0.2); padding: 15px; border-radius: 8px;">' +
                                  'No se pudo conectar con el servidor de MUVI. Verifique su conexión.</p>';
             }
-        }
+        
 
         function renderizarSala(butacas) {
             const sala = document.getElementById('salaCinema');
@@ -134,5 +134,4 @@
 
         cargarSala();
     </script>
-</body>
-</html>
+<?= view('templates/footer') ?>

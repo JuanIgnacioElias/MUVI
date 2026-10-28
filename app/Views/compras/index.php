@@ -5,9 +5,8 @@
     <title>Historial de Compras - Cine</title>
     <link href="https://jsdelivr.net" rel="stylesheet">
 </head>
-<body class="bg-light py-4">
-
-    <div class="container">
+    <?= view('templates/header') ?>
+    <div class="container" style="margin-top: 50px">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>🎬 Historial de Compras</h1>
             <!-- Botón para ir al formulario separado -->
@@ -62,7 +61,7 @@
             </div>
         </div>
     </div>
-
+    
     <script src="https://jsdelivr.net"></script>
-</body>
-</html>
+    
+    <?= view('templates/footer') ?>
