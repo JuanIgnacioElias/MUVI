@@ -1,6 +1,6 @@
 
     <?= view('templates/header') ?>
-    <div class="container">
+    <div class="container" style="margin-top: 50px">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>💳 Historial de Pagos</h1>
             <a href="<?php echo base_url('pago/nuevo'); ?>" class="btn btn-primary">Registrar Nuevo Pago</a>

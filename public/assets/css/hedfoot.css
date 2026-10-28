@@ -5,13 +5,19 @@
   font-family: 'Arial Black', 'Impact', sans-serif; 
 }
 body {
-  background-color:#B81D24 !important;
+  background: linear-gradient(to top,#c2241f, #831512);
 }
 
 header {
   background-color: #000000;
   height: 80px;
 }
+
+header img{transition: transform 0.3s ease; }
+header img:hover{
+  transform: scale(0.9); 
+}
+
 .logo {
   color: #ffffff;
   float: left;
@@ -19,6 +25,7 @@ header {
   margin-top: 20px;
   margin-left: 30px;
 }
+
 .menu {
   float: left;
   margin-top: 28px;
@@ -98,3 +105,15 @@ footer {
   margin-top: 10px;
   font-weight: bold;
 }
+
+header img{transition: transform 0.3s ease; }
+header img:hover{
+  transform: scale(0.9); 
+}
+
+h1, h2, h3, h4, h5{
+  color: black;
+}
+
+.badge { background: #28a745; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.9em; }
+.card { background: #fcdb8a; color: black;padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 5000px; }
