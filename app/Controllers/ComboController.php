@@ -18,8 +18,8 @@ class ComboController extends BaseController
 
     public function index()
     {
-        $combos = $this->comboModel->findAll();
-        return $this->respond($combos, 200);
+        $data['combo'] = $this->comboModel->findAll();
+        return view('combo_view', $data);
     }
     public function show($id = null)
     {

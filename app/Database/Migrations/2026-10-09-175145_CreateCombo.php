@@ -11,6 +11,7 @@ class CreateCombo extends Migration
         $this->forge->addField(['id_combo' => ['type'=> 'INT','unsigned'=> true,'auto_increment' => true,],
             'comida' => ['type'=> 'VARCHAR','constraint' => '20',],
             'bebida' => ['type'=> 'VARCHAR','constraint' => '20',],
+            'precio'  => ['type' => 'DECIMAL', 'constraint' => '10,2'],
             'created_at' => ['type' => 'DATETIME','null' => true,],
             'updated_at' => ['type' => 'DATETIME','null' => true,],
         ]);

@@ -66,6 +66,8 @@ $routes->get('butaca','ButacaController::mostrarPantalla');
 $routes->resource('butacacontroller', ['controller' => 'App\Controllers\ButacaController']);
 $routes->get('compra/Combo', 'ButacaController::Combo');
 
+$routes->get('combo', 'ComboController::index');
+
 
 
 

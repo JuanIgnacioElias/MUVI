@@ -9,7 +9,7 @@ class ComboModel extends Model
     protected $table            = 'combo';
     protected $primaryKey       = 'id_combo';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['comida', 'bebida'];
+    protected $allowedFields    = ['comida', 'bebida', 'precio'];
     protected $useTimestamps    = true;
     protected $validationRules = [
         'comida' => 'required|max_length[20]',
