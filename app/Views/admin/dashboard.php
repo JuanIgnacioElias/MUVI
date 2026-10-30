@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Administración - MUVI</title>
 </head>
+</head>
 <body>
+
     <h1>Panel de administración de MUVI</h1>
 
     <p>
@@ -33,5 +35,4 @@
     <form action="<?= site_url('logout') ?>">
         <button type="submit">Cerrar sesión</button>
     </form>
-</body>
-</html>
+    </div>

@@ -64,6 +64,8 @@ $routes->post('pago/guardarWeb', 'Pago::guardarWeb');
 $routes->get('sala', 'ButacaController::mostrarPantalla');
 $routes->get('butaca','ButacaController::mostrarPantalla');
 $routes->resource('butacacontroller', ['controller' => 'App\Controllers\ButacaController']);
+$routes->get('compra/Combo', 'ButacaController::Combo');
+
 
 
 

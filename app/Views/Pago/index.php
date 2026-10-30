@@ -45,4 +45,4 @@
             </div>
         </div>
     </div>
-    <?= view('templates/footer') ?><    
+    <?= view('templates/footer') ?>

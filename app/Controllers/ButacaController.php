@@ -58,7 +58,6 @@ class ButacaController extends BaseController
             'id_butaca' => $this->butacaModel->getInsertID()
         ], 201);
     }
-    // MODIFICAR EL ESTADO O UBICACIÓN DE UNA BUTACA
     public function update($id = null)
     {
         if (!$this->butacaModel->find($id)) {
@@ -99,5 +98,10 @@ class ButacaController extends BaseController
             'message' => 'Butaca removida del mapa de la sala correctamente.'
         ], 200);
     }
+  public function Combo()
+{
+    return view('butacas/Combo'); 
 }
+    }
+
 

@@ -1,264 +1,336 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Arial Black', 'Impact', sans-serif; 
-}
-body {
-  background: linear-gradient(to top,#c2241f, #831512);
-}
-
-header {
-  background-color: #000000;
-  height: 80px;
-}
-
-header img{transition: transform 0.3s ease; }
-header img:hover{
-  transform: scale(0.9); 
-}
-
-.logo {
-  color: #ffffff;
-  float: left;
-  font-size: 28px;
-  margin-top: 20px;
-  margin-left: 30px;
-}
-
-.menu {
-  float: left;
-  margin-top: 28px;
-  margin-left: 100px;
-}
-.menu a {
-  color: #ffffff;
-  text-decoration: none;
-  margin-right: 30px;
-  font-size: 18px;
-}
-.botones-derecha {
-  float: right;
-  margin-top: 18px;
-  margin-right: 30px;
-}
-.btn {
-  background-color: #fcdb8a; 
-  color: #000000;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px; 
-  font-size: 12px;
-  font-weight: bold;
-  margin-left: 10px;
-  cursor: pointer;
-}
-.btn:hover {
-  background-color:#A30000; 
-}
-footer {
-  background-color: #000000;
-  color: #ffffff;
-  padding: 20px 30px;
-  font-size: 14px;
-}
-.bg-dark {
-  background-color: #0d0d0d !important;
-}
-.custom-nav-link:hover {
-  color: #f1c40f !important; 
-}
-.banner-muvi {
-  width: 100%;
-  max-width: 100%;
-  margin: 0 0 30px 0;
-  text-align: center;
-}
-.contenedor-peliculas {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.tarjeta-pelicula {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-
-.poster {
-  width: 100%;
-  overflow: hidden;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.poster img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.tarjeta-pelicula h3 {
-  font-size: 0.95rem;
-  margin-top: 10px;
-  font-weight: bold;
-}
-
-header img{transition: transform 0.3s ease; }
-header img:hover{
-  transform: scale(0.9); 
-}
-
-h1, h2, h3, h4, h5{
-  color: black;
-}
-
-.badge { background: #28a745; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.9em; }
-.card { background: #fcdb8a; color: black;padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 5000px; }
 /* ==========================================================================
-   Estilos de la Sala de Cine - MUVI
+   Estilos Generales & Base
    ========================================================================== */
-
-/* Contenedor General */
-.contenedor-vista-butacas {
-  max-width: 800px;
-  margin: 40px auto;
-  padding: 20px;
-  text-align: center;
-  color: #ffffff;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.contenedor-vista-butacas h1 {
-  font-size: 2.5rem;
-  margin-bottom: 5px;
-  color: #ffffff;
-}
-
-.contenedor-vista-butacas p {
-  color: #aaaaaa;
-  font-size: 1.1rem;
-  margin-bottom: 30px;
-}
-
-/* Simulación de la Pantalla del Cine */
-.pantalla-contenedor {
-  margin: 40px auto 50px auto;
-  width: 80%;
-}
-
-.pantalla {
-  height: 10px;
-  background: #ffffff;
-  border-radius: 50% / 100% 100% 0 0;
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.6);
-}
-
-.pantalla-texto {
-  color: #888888;
-  font-size: 12px;
-  margin-top: 10px;
-  text-transform: uppercase;
-  letter-spacing: 4px;
-}
-
-/* Distribución del Mapa de Asientos */
-.sala-contenedor {
-  background: rgba(0, 0, 0, 0.5);
-  padding: 40px 30px;
-  border-radius: 12px;
-  margin: 20px auto;
-  display: inline-block;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
-}
-
-/* Filas de Asientos */
-.fila {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 12px;
-  gap: 12px;
-}
-
-.letra-fila {
-  font-weight: bold;
-  color: #e50914; /* Color rojo de la marca MUVI */
-  width: 30px;
-  text-align: left;
-  font-size: 18px;
-}
-
-/* Botones de las Butacas */
-.butaca {
-  width: 38px;
-  height: 38px;
-  background-color: #444444; /* Gris por defecto (disponible) */
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 13px;
-  transition: all 0.15s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.butaca:hover:not(:disabled) {
-  background-color: #666666;
-  transform: scale(1.1);
-}
-
-/* Estados de las Butacas */
-.butaca.ocupada {
-  background-color: #b91c1c !important; /* Rojo oscuro para ocupado */
-  color: rgba(255, 255, 255, 0.6);
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.butaca.seleccionada {
-  background-color: #f59e0b !important; /* Naranja/Amarillo para tu seleccion */
-  color: #000000;
-  box-shadow: 0 0 10px #f59e0b;
-}
-
-/* Leyenda de Referencias */
-.leyenda {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-top: 40px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 15px 25px;
-  border-radius: 30px;
-  display: inline-flex;
-}
-
-.leyenda-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.leyenda-color {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
-}
-
-/* Colores de la Leyenda coordinados con las butacas */
-.leyenda-color.disponible { background-color: #444444; }
-.leyenda-color.seleccionada { background-color: #f59e0b; }
-.leyenda-color.ocupada { background-color: #b91c1c; }
-
-.leyenda-item span {
-  color: #dddddd;
-  font-size: 14px;
-  font-weight: 500;
-}
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial Black', 'Impact', sans-serif; 
+  }
+  
+  body {
+    background: linear-gradient(to top, #c2241f, #831512);
+  }
+  
+  h1, h2, h3, h4, h5 {
+    color: black;
+  }
+  
+  /* ==========================================================================
+     Header & Navegación
+     ========================================================================== */
+  header {
+    background-color: #000000;
+    height: 80px;
+  }
+  
+  header img {
+    transition: transform 0.3s ease; 
+  }
+  
+  header img:hover {
+    transform: scale(0.9); 
+  }
+  
+  .logo {
+    color: #ffffff;
+    float: left;
+    font-size: 28px;
+    margin-top: 20px;
+    margin-left: 30px;
+  }
+  
+  .menu {
+    float: left;
+    margin-top: 28px;
+    margin-left: 100px;
+  }
+  
+  .menu a {
+    color: #ffffff;
+    text-decoration: none;
+    margin-right: 30px;
+    font-size: 18px;
+  }
+  
+  .botones-derecha {
+    float: right;
+    margin-top: 18px;
+    margin-right: 30px;
+  }
+  
+  .btn {
+    background-color: #fcdb8a; 
+    color: #000000;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px; 
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #A30000; 
+  }
+  
+  .bg-dark {
+    background-color: #0d0d0d !important;
+  }
+  
+  .custom-nav-link:hover {
+    color: #f1c40f !important; 
+  }
+  
+  /* ==========================================================================
+     Cartelera Principal (Películas)
+     ========================================================================== */
+  .banner-muvi {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 30px 0;
+    text-align: center;
+  }
+  
+  .contenedor-peliculas {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .tarjeta-pelicula {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .poster {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  }
+  
+  .poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .tarjeta-pelicula h3 {
+    font-size: 0.95rem;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  .badge { 
+    background: #28a745; 
+    color: white; 
+    padding: 5px 10px; 
+    border-radius: 4px; 
+    font-size: 0.9em; 
+  }
+  
+  .card { 
+    background: #fcdb8a; 
+    color: black;
+    padding: 20px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    max-width: 5000px; 
+  }
+  
+  /* ==========================================================================
+     Sala de Cine & Mapa de Asientos
+     ========================================================================== */
+  .contenedor-vista-butacas {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .contenedor-vista-butacas h1 {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+    color: #ffffff;
+  }
+  
+  .contenedor-vista-butacas p {
+    color: #aaaaaa;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+  }
+  
+  /* Simulación de la Pantalla del Cine */
+  .pantalla-contenedor {
+    margin: 40px auto 50px auto;
+    width: 80%;
+  }
+  
+  .pantalla {
+    height: 10px;
+    background: #ffffff;
+    border-radius: 50% / 100% 100% 0 0;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.6);
+  }
+  
+  .pantalla-texto {
+    color: #888888;
+    font-size: 12px;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+  }
+  
+  /* Distribución del Mapa de Asientos */
+  .sala-contenedor {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 30px 20px;
+    border-radius: 12px;
+    margin: 20px auto;
+    display: inline-block;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6);
+    max-width: 100%;
+    overflow-x: auto; /* Scroll horizontal si la pantalla es chica */
+  }
+  
+  /* Filas de Asientos */
+  .fila {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  
+  .letra-fila {
+    font-weight: bold;
+    color: #e50914; 
+    width: 30px;
+    text-align: left;
+    font-size: 18px;
+  }
+  
+  /* Botones de las Butacas */
+  .butaca {
+    width: 38px;
+    height: 38px;
+    background-color: #444444; 
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .butaca:hover:not(:disabled) {
+    background-color: #666666;
+    transform: scale(1.1);
+  }
+  
+  .butaca:nth-child(13) {
+    margin-right: 30px; /* Pasillo central de la sala */
+  }
+  
+  /* Estados de las Butacas */
+  .butaca.ocupada {
+    background-color: #b91c1c !important; 
+    color: rgba(255, 255, 255, 0.6);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  .butaca.seleccionada {
+    background-color: #f59e0b !important; 
+    color: #000000;
+    box-shadow: 0 0 10px #f59e0b;
+  }
+  
+  /* Leyenda de Referencias */
+  .leyenda {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px 25px;
+    border-radius: 30px;
+    display: inline-flex;
+  }
+  
+  .leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .leyenda-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+  
+  .leyenda-color.disponible { background-color: #444444; }
+  .leyenda-color.seleccionada { background-color: #f59e0b; }
+  .leyenda-color.ocupada { background-color: #b91c1c; }
+  
+  .leyenda-item span {
+    color: #dddddd;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  /* Botón Siguiente Flujo */
+  .contenedor-boton-siguiente {
+    margin-top: 40px;
+    text-align: center;
+  }
+  
+  .btn-siguiente-flujo {
+    background-color: #e50914; 
+    color: #ffffff;
+    border: none;
+    padding: 14px 45px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  
+  .btn-siguiente-flujo:hover:not(:disabled) {
+    background-color: #b91c1c;
+    transform: scale(1.05);
+  }
+  
+  .btn-siguiente-flujo:disabled {
+    background-color: #555555;
+    color: #aaaaaa;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+  
+  /* ==========================================================================
+     Footer
+     ========================================================================== */
+  footer {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 20px 30px;
+    font-size: 14px;
+  }
+  
