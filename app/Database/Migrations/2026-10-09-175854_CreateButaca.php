@@ -20,7 +20,6 @@ class CreateButaca extends Migration
         ]);
 
         $this->forge->addKey('id_butaca', true);
-        $this->forge->addForeignKey('id_entrada', 'entradas', 'id_entrada', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('id_sala', 'salas', 'id_sala', 'CASCADE', 'CASCADE');
         $this->forge->createTable('butacas');
     }

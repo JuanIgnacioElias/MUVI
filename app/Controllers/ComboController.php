@@ -18,7 +18,9 @@ class ComboController extends BaseController
 
     public function index()
     {
-        $data['combo'] = $this->comboModel->findAll();
+        // Obtenemos todos los combos de la base de datos
+        $data['combos'] = $this->comboModel->findAll();
+        // Si estás consumiendo esto desde una app web tradicional de CI4:
         return view('combo_view', $data);
     }
     public function show($id = null)
