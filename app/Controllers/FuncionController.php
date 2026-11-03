@@ -3,112 +3,122 @@
 namespace App\Controllers;
 
 use App\Models\FuncionModel;
-use CodeIgniter\API\ResponseTrait;
 
 class FuncionController extends BaseController
 {
-    use ResponseTrait;
-
-    protected $funcionModel;
+    protected $FuncionModel;
 
     public function __construct()
     {
-        $this->funcionModel = new FuncionModel();
+        $this->FuncionModel = new FuncionModel();
     }
 
-    // LISTAR TODAS LAS FUNCIONES
+    // LISTAR TODAS LAS FUNCIONES (Muestra la tabla principal)
     public function index()
     {
-        $funciones = $this->funcionModel->findAll();
-        return $this->respond($funciones, 200);
+        $data['funciones'] = $this->FuncionModel->findAll();
+        
+        // 🟢 DEFINIMOS EL ROL EN MAYÚSCULAS:
+        // Podés cambiarlo a 'EMPLEADO' o 'CLIENTE' para probar cómo reacciona tu vista.
+        $data['rol_usuario'] = 'ADMINISTRADOR'; 
+        
+        // Carga la vista en app/Views/funciones/index.php
+        return view('funciones/index', $data); 
     }
 
-    // MOSTRAR UNA FUNCIÓN POR SU ID
-    public function show($id = null)
-    {
-        $funcion = $this->funcionModel->find($id);
-
-        if (!$funcion) {
-            return $this->failNotFound('La función solicitada no existe.');
-        }
-
-        return $this->respond($funcion, 200);
-    }
-
-    //CREAR UNA NUEVA FUNCIÓN
+    // MOSTRAR EL FORMULARIO DE CREACIÓN
     public function create()
     {
-        // Recolectamos los datos requeridos por la migración y el modelo
+        // Carga la vista con el formulario en app/Views/funciones/create.php
+        return view('funciones/create');
+    }
+
+    // ALMACENAR LA NUEVA FUNCIÓN (Procesa el formulario de alta)
+    public function store()
+    {
         $data = [
-            'fecha'        => $this->request->getVar('fecha'),
-            'hora_ingreso' => $this->request->getVar('hora_ingreso'),
-            'hora_salida'  => $this->request->getVar('hora_salida'),
-            'id_sala'      => $this->request->getVar('id_sala'),
-            'id_pelicula'  => $this->request->getVar('id_pelicula'),
+            'fecha'        => $this->request->getPost('fecha'),
+            'hora_ingreso' => $this->request->getPost('hora_ingreso'),
+            'hora_salida'  => $this->request->getPost('hora_salida'),
+            'id_sala'      => $this->request->getPost('id_sala'),
+            'id_pelicula'  => $this->request->getPost('id_pelicula'),
         ];
 
         // Validamos formatos de hora adicionales para proteger el tipo de dato TIME
         if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $data['hora_ingreso'] ?? '') || 
             !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $data['hora_salida'] ?? '')) {
-            return $this->respond(['errors' => ['horas' => 'Los formatos de hora de ingreso o salida no son válidos (debe ser HH:MM).']], 400);
+            
+            return redirect()->back()
+                             ->withInput()
+                             ->with('errors', ['horas' => 'Los formatos de hora de ingreso o salida no son válidos (debe ser HH:MM).']);
         }
 
-        // El modelo ejecuta la inserción y procesa sus reglas (valid_date, is_natural_no_zero)
-        if (!$this->funcionModel->insert($data)) {
-            return $this->respond(['errors' => $this->funcionModel->errors()], 400);
+        // El modelo ejecuta la inserción y procesa sus reglas de validación interna
+        if (!$this->FuncionModel->insert($data)) {
+            return redirect()->back()
+                             ->withInput()
+                             ->with('errors', $this->FuncionModel->errors());
         }
-        return $this->respond([
-            'status'     => 201,
-            'message'    => 'Función programada con éxito.',
-            'id_funcion' => $this->funcionModel->getInsertID()
-        ], 201);
+
+        return redirect()->to('/funciones')
+                         ->with('success', 'Función programada con éxito.');
     }
 
-    // ACTUALIZAR UNA FUNCIÓN EXISTENTE
+    // MOSTRAR EL FORMULARIO DE EDICIÓN
+    public function edit($id = null)
+    {
+        $data['funcion'] = $this->FuncionModel->find($id);
+
+        if (!$data['funcion']) {
+            return redirect()->to('/funciones')
+                             ->with('error', 'La función solicitada no existe.');
+        }
+
+        // Carga la vista con el formulario de edición en app/Views/funciones/edit.php
+        return view('funciones/edit', $data);
+    }
+
+    // ACTUALIZAR UNA FUNCIÓN EXISTENTE (Procesa el formulario de edición)
     public function update($id = null)
     {
-        // Verificamos si el registro existe en la base de datos
-        if (!$this->funcionModel->find($id)) {
-            return $this->failNotFound('No se puede actualizar. La función no existe.');
+        if (!$this->FuncionModel->find($id)) {
+            return redirect()->to('/funciones')
+                             ->with('error', 'No se puede actualizar. La función no existe.');
         }
 
-        // Tomamos los datos del cuerpo de la petición
         $data = [
-            'fecha'        => $this->request->getVar('fecha'),
-            'hora_ingreso' => $this->request->getVar('hora_ingreso'),
-            'hora_salida'  => $this->request->getVar('hora_salida'),
-            'id_sala'      => $this->request->getVar('id_sala'),
-            'id_pelicula'  => $this->request->getVar('id_pelicula'),
+            'fecha'        => $this->request->getPost('fecha'),
+            'hora_ingreso' => $this->request->getPost('hora_ingreso'),
+            'hora_salida'  => $this->request->getPost('hora_salida'),
+            'id_sala'      => $this->request->getPost('id_sala'),
+            'id_pelicula'  => $this->request->getPost('id_pelicula'),
         ];
 
-        // Filtramos para actualizar únicamente los campos que el usuario envió
+        // Filtramos para actualizar únicamente los campos que no vengan vacíos
         $data = array_filter($data, function($value) {
-            return $value !== null;
+            return $value !== null && $value !== '';
         });
 
-        // Intentamos realizar la actualización empleando las reglas del modelo
-        if (!$this->funcionModel->update($id, $data)) {
-            return $this->respond(['errors' => $this->funcionModel->errors()], 400);
+        if (!$this->FuncionModel->update($id, $data)) {
+            return redirect()->back()
+                             ->withInput()
+                             ->with('errors', $this->FuncionModel->errors());
         }
 
-        return $this->respond([
-            'status'  => 200,
-            'message' => 'Función actualizada correctamente.'
-        ], 200);
+        return redirect()->to('/funciones')
+                         ->with('success', 'Función actualizada correctamente.');
     }
 
-    //ELIMINAR UNA FUNCIÓN
     public function delete($id = null)
     {
-        if (!$this->funcionModel->find($id)) {
-            return $this->failNotFound('La función no existe.');
+        if (!$this->FuncionModel->find($id)) {
+            return redirect()->to('/funciones')
+                             ->with('error', 'La función no existe.');
         }
 
-        $this->funcionModel->delete($id);
+        $this->FuncionModel->delete($id);
 
-        return $this->respond([
-            'status'  => 200,
-            'message' => 'Función eliminada correctamente.'
-        ], 200);
+        return redirect()->to('/funciones')
+                         ->with('success', 'Función eliminada correctamente.');
     }
 }

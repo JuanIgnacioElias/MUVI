@@ -64,10 +64,12 @@ $routes->post('pago/guardarWeb', 'Pago::guardarWeb');
 $routes->get('sala', 'ButacaController::mostrarPantalla');
 $routes->get('butaca','ButacaController::mostrarPantalla');
 $routes->resource('butacacontroller', ['controller' => 'App\Controllers\ButacaController']);
-$routes->get('compra/Combo', 'ButacaController::Combo');
-
-$routes->get('combo', 'ComboController::index');
-
+$routes->get('funcion', 'FuncionController::index');
+$routes->get('funcion/create', 'FuncionController::create');
+$routes->post('funcion/store', 'FuncionController::store');
+$routes->get('funcion/edit/(:num)', 'FuncionController::edit/$1');
+$routes->post('funcion/update/(:num)', 'FuncionController::update/$1');
+$routes->get('funcion/delete/(:num)', 'FuncionController::delete/$1');
 
 
 

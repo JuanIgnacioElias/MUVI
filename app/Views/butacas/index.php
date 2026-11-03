@@ -4,50 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Selección de Butacas - MUVI</title>
-    <!-- Tu archivo CSS externo -->
     <link rel="stylesheet" href="/css/estilos_sala.css">
-    
-    <style>
-        /* Estilo para crear el pasillo del medio en la sala de 250 personas */
-        .butaca:nth-child(13) {
-            margin-right: 30px; /* Crea una separación simulando el pasillo central */
-        }
-        /* Asegura que el contenedor de la sala sea lo suficientemente ancho para las 25 butacas */
-        .sala-contenedor {
-            max-width: 100%;
-            overflow-x: auto; /* Agrega scroll horizontal si la pantalla es muy chica */
-            padding: 30px 20px;
-        }
-
-        /* Estilos específicos para el nuevo botón Siguiente */
-        .contenedor-boton-siguiente {
-            margin-top: 40px;
-            text-align: center;
-        }
-        .btn-siguiente-flujo {
-            background-color: #e50914; /* Rojo corporativo MUVI */
-            color: #ffffff;
-            border: none;
-            padding: 14px 45px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-            transition: background-color 0.2s, transform 0.1s;
-        }
-        .btn-siguiente-flujo:hover:not(:disabled) {
-            background-color: #b91c1c;
-            transform: scale(1.05);
-        }
-        .btn-siguiente-flujo:disabled {
-            background-color: #555555;
-            color: #aaaaaa;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-    </style>
 </head>
 <body>
 <?= view('templates/header') ?>
@@ -82,8 +39,6 @@
                 <span>Ocupado</span>
             </div>
         </div>
-
-        <!-- AQUÍ SE AGREGÓ EL BOTÓN SIGUIENTE -->
         <div class="contenedor-boton-siguiente">
             <button id="btnSiguiente" class="btn-siguiente-flujo" disabled>
                 Siguiente
@@ -217,7 +172,7 @@
             localStorage.setItem('asientos_muvi', JSON.stringify(asientosSeleccionados));
             
             // 2. Redireccionamos directamente a la URL de la pantalla de combos de comida
-            window.location.href = 'http://localhost:8080/index.php/compra/combos';
+            window.location.href = 'http://localhost:8080/index.php/combos';
         });
 
         document.addEventListener("DOMContentLoaded", cargarSala);

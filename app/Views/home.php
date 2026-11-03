@@ -60,4 +60,5 @@
 <a  href= <?=site_url('compras')?>>compras</a>
 <a  href= <?=site_url('pago')?>>Pago</a>
 <a href= <?=site_url('butaca')?>>seleccion de butaca</a>
+<a href= <?=site_url('funcion')?>>funciones</a>
 <?= view('templates/footer') ?>
