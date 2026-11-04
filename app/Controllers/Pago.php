@@ -15,20 +15,35 @@ class Pago extends BaseController
     {
         $this->pagoModel = new PagoModel();
     }
-    // VISTAS WEB (Para ver e interactuar en el navegador)
-    //Muestra el historial visual 
+
+    // =========================================================================
+    // VISTAS WEB (Control de flujo e Interfaz del Navegador)
+    // =========================================================================
+
+    /**
+     * Muestra la vista principal. 
+     * Con la inversión de flujos, esta ruta carga el Formulario de Pago para Clientes.
+     * Si se pasa el parámetro ?admin=true en la URL, renderiza la tabla de auditoría.
+     */
     public function index()
     {
         $data['pagos'] = $this->pagoModel->findAll();
         return view('Pago/index', $data); 
     }
-    // Muestra el formulario para crear un pago
+
+    /**
+     * Muestra el formulario alternativo para crear un pago.
+     * Nota: Mantenido por compatibilidad estructural del sistema.
+     */
     public function nuevo()
     {
         return view('Pago/form');
     }
 
-    // Procesa el formulario web y redirige
+    /**
+     * Procesa el formulario enviado por el cliente, inserta la orden en la BD
+     * y retorna de forma segura limpiando la sesión local del carrito.
+     */
     public function guardarWeb()
     {
         $data = [
@@ -39,20 +54,28 @@ class Pago extends BaseController
         ];
 
         if ($this->pagoModel->insert($data)) {
-            return redirect()->to(base_url('pago'))->with('success', '¡Pago registrado con éxito!');
+            // Guardamos una señal flash temporal que el JavaScript de la vista leerá para vaciar el localStorage
+            session()->setFlashdata('clear_cart', true);
+            
+            // Redirección fluida y segura a la cartelera pública del cine con mensaje de éxito
+            return redirect()->to(base_url('cartelera'))->with('success', '¡Su pago ha sido registrado con éxito! Disfrute la función.');
         }
 
         return redirect()->back()->withInput()->with('errors', $this->pagoModel->errors());
     }
 
-    // OBTENER TODOS LOS PAGOS
+    /**============
+     * OBTENER TODOS LOS PAGOS VIA API
+     */
     public function apiIndex()
     {
         $pagos = $this->pagoModel->findAll();
         return $this->respond($pagos, 200);
     }
 
-    // OBTENER UN PAGO POR SU ID
+    /**
+     * OBTENER UN PAGO POR SU ID
+     */
     public function show($id = null)
     {
         $pago = $this->pagoModel->find($id);
@@ -64,7 +87,9 @@ class Pago extends BaseController
         return $this->respond($pago, 200);
     }
 
-    // REGISTRAR UN NUEVO PAGO
+    /**
+     * REGISTRAR UN NUEVO PAGO VIA API
+     */
     public function create()
     {
         $data = [
@@ -85,7 +110,9 @@ class Pago extends BaseController
         ], 201);
     }
 
-    // ACTUALIZA EL ESTADO DE UN PAGO
+    /**
+     * ACTUALIZA EL ESTADO DE UN PAGO VIA API
+     */
     public function update($id = null)
     {
         if (!$this->pagoModel->find($id)) {

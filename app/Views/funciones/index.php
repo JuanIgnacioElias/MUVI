@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Cartelera de Funciones</title>
-    <link href="https://jsdelivr.net" rel="stylesheet">
     <link rel="stylesheet" href="/css/estilos_sala.css">
 </head>
 <body class="bg-light">
