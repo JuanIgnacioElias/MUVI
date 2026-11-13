@@ -13,24 +13,44 @@ class FuncionController extends BaseController
         $this->FuncionModel = new FuncionModel();
     }
 
+    /**
+     * Salas y películas para los <select> del formulario.
+     *
+     * Se usa el query builder porque Models/Salas.php y Models/Peliculas.php
+     * declaran las clases SalaModel y PeliculaModel, y CodeIgniter no las
+     * puede autocargar con un nombre de archivo distinto al de la clase.
+     */
+    private function opcionesFormulario(): array
+    {
+        $db = db_connect();
+
+        return [
+            'salas'     => $db->table('salas')
+                               ->select('id_sala, nombre')
+                               ->orderBy('nombre')
+                               ->get()->getResultArray(),
+            'peliculas' => $db->table('peliculas')
+                               ->select('id_pelicula, titulo')
+                               ->orderBy('titulo')
+                               ->get()->getResultArray(),
+        ];
+    }
+
     // LISTAR TODAS LAS FUNCIONES (Muestra la tabla principal)
     public function index()
     {
         $data['funciones'] = $this->FuncionModel->findAll();
-        
-        // 🟢 DEFINIMOS EL ROL EN MAYÚSCULAS:
-        // Podés cambiarlo a 'EMPLEADO' o 'CLIENTE' para probar cómo reacciona tu vista.
-        $data['rol_usuario'] = 'ADMINISTRADOR'; 
-        
-        // Carga la vista en app/Views/funciones/index.php
-        return view('funciones/index', $data); 
+
+        // El rol sale de la sesión (lo guarda Auth::processLogin en la clave 'role').
+        $data['rol_usuario'] = strtoupper((string) session()->get('role'));
+
+        return view('funciones/index', $data);
     }
 
     // MOSTRAR EL FORMULARIO DE CREACIÓN
     public function create()
     {
-        // Carga la vista con el formulario en app/Views/funciones/create.php
-        return view('funciones/create');
+        return view('funciones/form', $this->opcionesFormulario() + ['funcion' => null]);
     }
 
     // ALMACENAR LA NUEVA FUNCIÓN (Procesa el formulario de alta)
@@ -45,9 +65,9 @@ class FuncionController extends BaseController
         ];
 
         // Validamos formatos de hora adicionales para proteger el tipo de dato TIME
-        if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $data['hora_ingreso'] ?? '') || 
+        if (!preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $data['hora_ingreso'] ?? '') ||
             !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/', $data['hora_salida'] ?? '')) {
-            
+
             return redirect()->back()
                              ->withInput()
                              ->with('errors', ['horas' => 'Los formatos de hora de ingreso o salida no son válidos (debe ser HH:MM).']);
@@ -60,29 +80,28 @@ class FuncionController extends BaseController
                              ->with('errors', $this->FuncionModel->errors());
         }
 
-        return redirect()->to('/funciones')
+        return redirect()->to('/funcion')
                          ->with('success', 'Función programada con éxito.');
     }
 
     // MOSTRAR EL FORMULARIO DE EDICIÓN
     public function edit($id = null)
     {
-        $data['funcion'] = $this->FuncionModel->find($id);
+        $funcion = $this->FuncionModel->find($id);
 
-        if (!$data['funcion']) {
-            return redirect()->to('/funciones')
+        if (!$funcion) {
+            return redirect()->to('/funcion')
                              ->with('error', 'La función solicitada no existe.');
         }
 
-        // Carga la vista con el formulario de edición en app/Views/funciones/edit.php
-        return view('funciones/edit', $data);
+        return view('funciones/form', $this->opcionesFormulario() + ['funcion' => $funcion]);
     }
 
     // ACTUALIZAR UNA FUNCIÓN EXISTENTE (Procesa el formulario de edición)
     public function update($id = null)
     {
         if (!$this->FuncionModel->find($id)) {
-            return redirect()->to('/funciones')
+            return redirect()->to('/funcion')
                              ->with('error', 'No se puede actualizar. La función no existe.');
         }
 
@@ -95,7 +114,7 @@ class FuncionController extends BaseController
         ];
 
         // Filtramos para actualizar únicamente los campos que no vengan vacíos
-        $data = array_filter($data, function($value) {
+        $data = array_filter($data, function ($value) {
             return $value !== null && $value !== '';
         });
 
@@ -105,20 +124,36 @@ class FuncionController extends BaseController
                              ->with('errors', $this->FuncionModel->errors());
         }
 
-        return redirect()->to('/funciones')
+        return redirect()->to('/funcion')
                          ->with('success', 'Función actualizada correctamente.');
     }
 
     public function delete($id = null)
     {
         if (!$this->FuncionModel->find($id)) {
-            return redirect()->to('/funciones')
+            return redirect()->to('/funcion')
                              ->with('error', 'La función no existe.');
         }
 
         $this->FuncionModel->delete($id);
 
-        return redirect()->to('/funciones')
+        return redirect()->to('/funcion')
                          ->with('success', 'Función eliminada correctamente.');
+    }
+
+    // CLIENTE: elige una función y pasa a la selección de butacas
+    public function seleccionar($id = null)
+    {
+        $funcion = $this->FuncionModel->find($id);
+
+        if (!$funcion) {
+            return redirect()->to('/funcion')
+                             ->with('error', 'La función solicitada no existe.');
+        }
+
+        // Queda guardada para los pasos siguientes (butacas, compra)
+        session()->set('id_funcion', (int) $funcion['id_funcion']);
+
+        return redirect()->to('/sala');
     }
 }

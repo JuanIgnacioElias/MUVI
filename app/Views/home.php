@@ -1,19 +1,21 @@
 <?= view('templates/header') ?>
-<div class="row my-5">
-    <div class="col text-center">
-        <?php if (!session()->get('isLoggedIn')): ?>
-            <h2 class="text-muted">Bienvenido a la plataforma</h2>
-            <p class="text-secondary">Iniciá sesión o registrate desde el menú superior para comenzar.</p>
-            <?php else: ?>
-                <h2 class="text-muted"> ¡Bienvenido, <?= esc(session()->get('name')) ?>! </h2>
-                <p class="text-secondary"> Nos alegra tenerte de nuevo en M.U.V.I. Ya podés explorar nuestra plataforma. </p>
-        <?php endif; ?>
-    </div>
-</div>
+
 <div class="seccion-cartelera">
-<div class="banner-muvi">
-    <img src="<?= base_url('assets/img/Muvi Diseño Web.png') ?>" alt="MUVI Cartelera">
-  </div>
+    <div class="banner-muvi">
+        <!-- Imagen de fondo -->
+        <img src="<?= base_url('assets/img/Muvi Diseño Web.png') ?>" alt="MUVI Cartelera" class="banner-img">
+        
+        <!-- Texto superpuesto -->
+        <div class="banner-texto">
+            <?php if (!session()->get('isLoggedIn')): ?>
+                <h2>Bienvenido a la plataforma</h2>
+                <p>Iniciá sesión o registrate desde el menú superior para comenzar.</p>
+            <?php else: ?>
+                <h2>¡Bienvenido, <?= esc(session()->get('name')) ?>!</h2>
+                <p>Nos alegra tenerte de nuevo en M.U.V.I. Ya podés explorar nuestra plataforma.</p>
+            <?php endif; ?>
+        </div>
+    </div>
   <section class="contenedor-peliculas">
     <!-- Película 1 -->
     <article class="tarjeta-pelicula">
