@@ -12,7 +12,7 @@ class CreateSalas extends Migration
             'id_sala'    => ['type' => 'INT', 'unsigned' => true, 'auto_increment' => true],
             'nombre'     => ['type' => 'VARCHAR', 'constraint' => 20],
             'capacidad'  => ['type' => 'SMALLINT', 'unsigned' => true],
-            'tipo_sala'  => ['type' => 'DECIMAL', 'constraint' => '10,2'], 
+            'tipo_sala'  => ['type' => 'ENUM', 'constraint' => ['2D', '3D', '4D']], 
             'created_at' => ['type' => 'DATETIME', 'null' => true],
             'updated_at' => ['type' => 'DATETIME', 'null' => true],
         ]);

@@ -14,6 +14,7 @@ class ComboModel extends Model
     protected $validationRules = [
         'comida' => 'required|max_length[20]',
         'bebida' => 'required|max_length[20]',
+        'precio' => 'required|numeric|greater_than_equal_to[0]',
     ];
     protected $validationMessages = [
         'comida' => [
@@ -23,6 +24,11 @@ class ComboModel extends Model
         'bebida' => [
             'required'   => 'El campo bebida es obligatorio.',
             'max_length' => 'La descripción de la bebida no puede superar los 20 caracteres.'
+        ],
+        'precio' => [
+            'required'              => 'El precio es obligatorio.',
+            'numeric'               => 'El precio debe ser un número.',
+            'greater_than_equal_to' => 'El precio no puede ser negativo.'
         ],
     ];
 }

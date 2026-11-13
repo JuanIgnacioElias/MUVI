@@ -62,14 +62,42 @@ $routes->group('compras', [
    $routes->get('pago/nuevo', 'Pago::nuevo');
 $routes->post('pago/guardarWeb', 'Pago::guardarWeb');
 $routes->get('sala', 'ButacaController::mostrarPantalla');
+// Combos: cualquiera puede verlos
+$routes->get('combos', 'ComboController::index');
+
+// Solo el cliente puede elegir combos para comprar
+$routes->post('combos/seleccionar', 'ComboController::seleccionar', [
+    'filter' => 'verificarRol:CLIENTE'
+]);
+
+// Solo el administrador puede agregar combos
+$routes->group('combos', [
+    'filter' => 'verificarRol:ADMINISTRADOR'
+], static function ($routes) {
+    $routes->get('nuevo', 'ComboController::nuevo');
+    $routes->post('guardar', 'ComboController::guardar');
+});
 $routes->get('butaca','ButacaController::mostrarPantalla');
 $routes->resource('butacacontroller', ['controller' => 'App\Controllers\ButacaController']);
-$routes->get('funcion', 'FuncionController::index');
-$routes->get('funcion/create', 'FuncionController::create');
-$routes->post('funcion/store', 'FuncionController::store');
-$routes->get('funcion/edit/(:num)', 'FuncionController::edit/$1');
-$routes->post('funcion/update/(:num)', 'FuncionController::update/$1');
-$routes->get('funcion/delete/(:num)', 'FuncionController::delete/$1');
+// Funciones (cartelera)
+// Cualquier usuario logueado puede ver la cartelera
+$routes->get('funcion', 'FuncionController::index', ['filter' => 'auth']);
+
+// Solo el cliente puede elegir una función para comprar
+$routes->get('funcion/seleccionar/(:num)', 'FuncionController::seleccionar/$1', [
+    'filter' => 'verificarRol:CLIENTE'
+]);
+
+// Solo empleado y administrador pueden gestionar funciones
+$routes->group('funcion', [
+    'filter' => 'verificarRol:EMPLEADO,ADMINISTRADOR'
+], static function ($routes) {
+    $routes->get('create', 'FuncionController::create');
+    $routes->post('store', 'FuncionController::store');
+    $routes->get('edit/(:num)', 'FuncionController::edit/$1');
+    $routes->post('update/(:num)', 'FuncionController::update/$1');
+    $routes->get('delete/(:num)', 'FuncionController::delete/$1');
+});
 
 $routes->get('admin/salas/(:num)', 'ButacaController::editor/$1');
 $routes->post('admin/salas/guardar/(:num)', 'ButacaController::guardarMapa/$1');
