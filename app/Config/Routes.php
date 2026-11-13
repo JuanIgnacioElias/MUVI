@@ -71,6 +71,10 @@ $routes->get('funcion/edit/(:num)', 'FuncionController::edit/$1');
 $routes->post('funcion/update/(:num)', 'FuncionController::update/$1');
 $routes->get('funcion/delete/(:num)', 'FuncionController::delete/$1');
 
+$routes->get('admin/salas/(:num)', 'ButacaController::editor/$1');
+$routes->post('admin/salas/guardar/(:num)', 'ButacaController::guardarMapa/$1');
+
+
 
 
 
