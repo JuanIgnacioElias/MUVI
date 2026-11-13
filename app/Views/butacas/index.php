@@ -13,7 +13,6 @@
         <h1 style="color: #ffffff !important; font-size: 2.5rem; margin-bottom: 5px;">Elige tus asientos</h1>
         <p id="textoCapacidad" style="color: #cccccc !important; font-size: 1.1rem; margin-bottom: 20px;">Sala del Cine (Cargando...)</p>
 
-        <!-- PANEL VISUAL SOLO PARA EMPLEADO Y ADMINISTRADOR -->
         <?php if (!empty($puedeEditar) && $puedeEditar): ?>
         <div class="panel-edicion-sala">
             <button type="button" id="btnToggleEditar" class="btn-editar-sala">✏️ Editar Sala</button>
@@ -37,98 +36,56 @@
         </div>
         <?php endif; ?>
 
-        <!-- Simulación de la Pantalla del Cine -->
         <div class="pantalla-contenedor" style="width: 90%; margin: 20px auto 40px auto;">
             <div class="pantalla"></div>
             <div class="pantalla-texto">Pantalla</div>
         </div>
 
-        <!-- Mapa de la Sala -->
         <div class="sala-contenedor" id="salaCinema"></div>
 
-        <!-- Referencia de colores -->
         <div class="leyenda">
-            <div class="leyenda-item">
-                <div class="leyenda-color disponible"></div>
-                <span>Disponible</span>
-            </div>
-            <div class="leyenda-item">
-                <div class="leyenda-color seleccionada"></div>
-                <span>Tu Selección</span>
-            </div>
-            <div class="leyenda-item">
-                <div class="leyenda-color ocupada"></div>
-                <span>Ocupado</span>
-            </div>
+            <div class="leyenda-item"><div class="leyenda-color disponible"></div><span>Disponible</span></div>
+            <div class="leyenda-item"><div class="leyenda-color seleccionada"></div><span>Tu Selección</span></div>
+            <div class="leyenda-item"><div class="leyenda-color ocupada"></div><span>Ocupado</span></div>
         </div>
 
         <div class="contenedor-boton-siguiente" id="contenedorBtnSiguiente">
-            <button id="btnSiguiente" class="btn-siguiente-flujo" disabled>
-                Siguiente
-            </button>
+            <button id="btnSiguiente" class="btn-siguiente-flujo" disabled>Siguiente</button>
         </div>
     </div>
-
-    <script>
+           <script>
+        
         const ID_SALA = <?= (int) ($id_sala ?? 1) ?>;
         const BASE_URL = '<?= base_url('index.php') ?>';
         const API_URL = `${BASE_URL}/butacacontroller?id_sala=${ID_SALA}`;
         const GUARDAR_URL = `${BASE_URL}/admin/salas/guardar/${ID_SALA}`;
         const ABECEDARIO = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-        let asientosSeleccionados = [];
-        let modoEdicion = false;
-        
-        // Matriz visual: filas de objetos { esButaca: bool, disponibilidad: 1|0 }
-        let grillaSala = []; 
+        let asientosSeleccionados = new Array(), modoEdicion = false, grillaSala = new Array();
 
         function generarSalaDeRespaldo() {
-            const sala = [];
-            const filas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
-            filas.forEach(letra => {
-                for (let asiento = 1; asiento <= 20; asiento++) {
-                    sala.push({
-                        posicionX: letra,
-                        posicionY: asiento,
-                        disponibilidad: 1
-                    });
-                }
+            const sala = new Array();
+            new Array('A','B','C','D','E','F','G','H','I','J').forEach(letra => {
+                for (let asiento = 1; asiento <= 20; asiento++) sala.push({ posicionX: letra, posicionY: asiento, disponibilidad: 1 });
             });
             return sala;
         }
 
-        // Convierte la lista plana de la BD en una grilla editable con pasillos detectados
         function construirGrillaDesdeBD(butacas) {
             const filasMap = {};
-            let maxColumna = 0;
-
+            let maxCol = 0;
             butacas.forEach(b => {
-                if (!filasMap[b.posicionX]) filasMap[b.posicionX] = [];
+                if (!filasMap[b.posicionX]) filasMap[b.posicionX] = new Array();
                 const col = parseInt(b.posicionY);
-                if (col > maxColumna) maxColumna = col;
+                if (col > maxCol) maxCol = col;
                 filasMap[b.posicionX].push(b);
             });
-
-            const letrasOrdenadas = Object.keys(filasMap).sort();
-            if (maxColumna < 10) maxColumna = 15;
-
-            grillaSala = letrasOrdenadas.map(letra => {
-                const filaCeldas = [];
-                const asientosFila = filasMap[letra];
-
-                for (let c = 1; c <= maxColumna; c++) {
-                    const encontrado = asientosFila.find(a => parseInt(a.posicionY) === c);
-                    if (encontrado) {
-                        filaCeldas.push({
-                            esButaca: true,
-                            disponibilidad: parseInt(encontrado.disponibilidad)
-                        });
-                    } else {
-                        filaCeldas.push({
-                            esButaca: false,
-                            disponibilidad: 1
-                        });
-                    }
+            const letras = Object.keys(filasMap).sort();
+            if (maxCol < 10) maxCol = 15;
+            grillaSala = letras.map(letra => {
+                const filaCeldas = new Array(), asientosFila = filasMap[letra];
+                for (let c = 1; c <= maxCol; c++) {
+                    const enc = asientosFila.find(a => parseInt(a.posicionY) === c);
+                    filaCeldas.push({ esButaca: Boolean(enc), disponibilidad: enc ? parseInt(enc.disponibilidad) : 1 });
                 }
                 return filaCeldas;
             });
@@ -136,185 +93,117 @@
 
         async function cargarSala() {
             try {
-                const respuesta = await fetch(API_URL);
-                if (!respuesta.ok) throw new Error("Fallo en la petición");
-                const butacas = await respuesta.json();
-                
-                if (!butacas || butacas.length === 0) {
-                    construirGrillaDesdeBD(generarSalaDeRespaldo());
-                } else {
-                    construirGrillaDesdeBD(butacas);
-                }
-            } catch (error) {
+                const resp = await fetch(API_URL);
+                if (!resp.ok) throw new Error();
+                const butacas = await resp.json();
+                construirGrillaDesdeBD((!butacas || butacas.length === 0) ? generarSalaDeRespaldo() : butacas);
+            } catch (e) {
                 construirGrillaDesdeBD(generarSalaDeRespaldo());
             }
             renderizarSala();
         }
-
         function renderizarSala() {
             const sala = document.getElementById('salaCinema');
             if (!sala) return;
-            
             sala.innerHTML = '';
             sala.className = modoEdicion ? 'sala-contenedor modo-edicion' : 'sala-contenedor';
+            let total = 0;
 
-            let totalButacasActivas = 0;
-
-            grillaSala.forEach((fila, indexFila) => {
-                const letraFila = ABECEDARIO[indexFila] || `F${indexFila + 1}`;
+            grillaSala.forEach((fila, iFila) => {
+                const letra = ABECEDARIO.charAt(iFila) || `F${iFila + 1}`;
                 const divFila = document.createElement('div');
                 divFila.className = 'fila';
+                const span = document.createElement('span');
+                span.className = 'letra-fila';
+                span.textContent = letra;
+                divFila.appendChild(span);
 
-                const spanLetra = document.createElement('span');
-                spanLetra.className = 'letra-fila';
-                spanLetra.textContent = letraFila;
-                divFila.appendChild(spanLetra);
-
-                let numeroVisible = 1;
-
-                fila.forEach((celda, indexCol) => {
-                    const botonAsiento = document.createElement('button');
-                    botonAsiento.type = 'button';
-
+                let numVisible = 1;
+                fila.forEach((celda, iCol) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
                     if (celda.esButaca) {
-                        totalButacasActivas++;
-                        const numActual = numeroVisible++;
-                        botonAsiento.className = 'butaca';
-                        botonAsiento.textContent = numActual;
-
-                        if (!modoEdicion && celda.disponibilidad === 0) {
-                            botonAsiento.classList.add('ocupada');
-                            botonAsiento.disabled = true;
-                        }
-
-                        botonAsiento.addEventListener('click', () => {
-                            if (modoEdicion) {
-                                // En modo edición: convierte butaca en pasillo
-                                grillaSala[indexFila][indexCol].esButaca = false;
-                                renderizarSala();
-                            } else {
-                                // En modo compra normal: selecciona asiento
-                                botonAsiento.classList.toggle('seleccionada');
-                                const identificador = `${letraFila}-${numActual}`;
-                                const idx = asientosSeleccionados.findIndex(a => a.id === identificador);
-
-                                if (idx > -1) {
-                                    asientosSeleccionados.splice(idx, 1);
-                                } else {
-                                    asientosSeleccionados.push({
-                                        id: identificador,
-                                        fila: letraFila,
-                                        asiento: numActual
-                                    });
-                                }
+                        total++;
+                        const num = numVisible++;
+                        btn.className = 'butaca';
+                        btn.textContent = num;
+                        if (!modoEdicion && celda.disponibilidad === 0) { btn.classList.add('ocupada'); btn.disabled = true; }
+                        btn.onclick = () => {
+                            if (modoEdicion) { fila[iCol].esButaca = false; renderizarSala(); }
+                            else {
+                                btn.classList.toggle('seleccionada');
+                                const id = `${letra}-${num}`, idx = asientosSeleccionados.findIndex(a => a.id === id);
+                                if (idx > -1) asientosSeleccionados.splice(idx, 1);
+                                else asientosSeleccionados.push({ id: id, fila: letra, asiento: num });
                                 document.getElementById('btnSiguiente').disabled = asientosSeleccionados.length === 0;
                             }
-                        });
+                        };
                     } else {
-                        // Es un pasillo / espacio vacío
-                        botonAsiento.className = 'butaca pasillo';
-                        botonAsiento.textContent = modoEdicion ? '+' : '';
-                        botonAsiento.disabled = !modoEdicion;
-
-                        if (modoEdicion) {
-                            botonAsiento.addEventListener('click', () => {
-                                // En modo edición: agrega una butaca en este espacio
-                                grillaSala[indexFila][indexCol] = { esButaca: true, disponibilidad: 1 };
-                                renderizarSala();
-                            });
-                        }
+                        btn.className = 'butaca pasillo';
+                        btn.textContent = modoEdicion ? '+' : '';
+                        btn.disabled = !modoEdicion;
+                        if (modoEdicion) btn.onclick = () => { fila[iCol] = { esButaca: true, disponibilidad: 1 }; renderizarSala(); };
                     }
-
-                    divFila.appendChild(botonAsiento);
+                    divFila.appendChild(btn);
                 });
-
                 sala.appendChild(divFila);
             });
+            document.getElementById('textoCapacidad').textContent = `Sala ${ID_SALA} (Capacidad actual: ${total} butacas)`;
+        }
 
-Usa el código con precaución.
-document.getElementById('textoCapacidad').textContent =
-Sala ${ID_SALA} (Capacidad actual: ${totalButacasActivas} butacas);
-}
-// --- CONTROLES DEL MODO EDICIÓN ---
-const btnToggleEditar = document.getElementById('btnToggleEditar');
-if (btnToggleEditar) {
-btnToggleEditar.addEventListener('click', () => {
-modoEdicion = !modoEdicion;
-asientosSeleccionados = [];
-document.getElementById('btnSiguiente').disabled = true;
-document.getElementById('herramientasEdicion').style.display = modoEdicion ? 'inline-flex' : 'none';
-document.getElementById('ayudaEdicion').style.display = modoEdicion ? 'block' : 'none';
-document.getElementById('contenedorBtnSiguiente').style.display = modoEdicion ? 'none' : 'block';
-btnToggleEditar.textContent = modoEdicion ? '❌ Cancelar Edición' : '✏️ Editar Sala';
-btnToggleEditar.classList.toggle('activo', modoEdicion);
-if (!modoEdicion) {
-cargarSala(); // Si cancela, recarga el estado original
-} else {
-renderizarSala();
-}
-});
-document.getElementById('btnGuardarSala').addEventListener('click', async () => {
-const butacasParaGuardar = [];
-grillaSala.forEach((fila, indexFila) => {
-const letraFila = ABECEDARIO[indexFila] || F${indexFila + 1};
-fila.forEach((celda, indexCol) => {
-if (celda.esButaca) {
-// Guardamos posicionY como el índice de columna (indexCol + 1) para mantener los pasillos exactos
-butacasParaGuardar.push({
-posicionX: letraFila,
-posicionY: indexCol + 1,
-disponibilidad: celda.disponibilidad
-});
-}
-});
-});
-try {
-const resp = await fetch(GUARDAR_URL, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({ butacas: butacasParaGuardar })
-});
-const resultado = await resp.json();
-if (resp.ok) {
-alert('✅ ¡Diagrama de la sala guardado correctamente!');
-modoEdicion = false;
-document.getElementById('herramientasEdicion').style.display = 'none';
-document.getElementById('ayudaEdicion').style.display = 'none';
-document.getElementById('contenedorBtnSiguiente').style.display = 'block';
-btnToggleEditar.textContent = '✏️ Editar Sala';
-btnToggleEditar.classList.remove('activo');
-cargarSala();
-} else {
-alert('Error: ' + (resultado.messages?.error || 'No se pudo guardar'));
-}
-} catch (err) {
-alert('Error de conexión al guardar la sala.');
-}
-});
-}
-function modificarFilas(delta) {
-if (delta > 0 && grillaSala.length < 26) {
-const cols = grillaSala.length > 0 ? grillaSala[0].length : 15;
-const nuevaFila = Array.from({ length: cols }, () => ({ esButaca: true, disponibilidad: 1 }));
-grillaSala.push(nuevaFila);
-} else if (delta < 0 && grillaSala.length > 1) {
-grillaSala.pop();
-}
-renderizarSala();
-}
-function modificarColumnas(delta) {
-if (grillaSala.length === 0) return;
-const colsActuales = grillaSala[0].length;
-if (delta > 0 && colsActuales < 30) {
-grillaSala.forEach(fila => fila.push({ esButaca: true, disponibilidad: 1 }));
-} else if (delta < 0 && colsActuales > 1) {
-grillaSala.forEach(fila => fila.pop());
-}
-renderizarSala();
-}
-// CONTROL DEL EVENTO CLICK EN EL BOTÓN SIGUIENTE
-document.getElementById('btnSiguiente').addEventListener('click', () => {
-localStorage.setItem('asientos_muvi', JSON.stringify(asientosSeleccionados));
-window.location.href = ${BASE_URL}/combos;
-});
-document.addEventListener("DOMContentLoaded", cargarSala);
+        function modificarFilas(d) {
+            if (d > 0 && grillaSala.length < 26) {
+                const cols = grillaSala.length > 0 ? grillaSala.at(0).length : 15;
+                grillaSala.push(Array.from({ length: cols }, () => ({ esButaca: true, disponibilidad: 1 })));
+            } else if (d < 0 && grillaSala.length > 1) grillaSala.pop();
+            renderizarSala();
+        }
+
+        function modificarColumnas(d) {
+            if (grillaSala.length === 0) return;
+            const cols = grillaSala.at(0).length;
+            if (d > 0 && cols < 30) grillaSala.forEach(f => f.push({ esButaca: true, disponibilidad: 1 }));
+            else if (d < 0 && cols > 1) grillaSala.forEach(f => f.pop());
+            renderizarSala();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const btnEd = document.getElementById('btnToggleEditar');
+            if (btnEd) {
+                btnEd.onclick = () => {
+                    modoEdicion = !modoEdicion;
+                    asientosSeleccionados = new Array();
+                    document.getElementById('btnSiguiente').disabled = true;
+                    document.getElementById('herramientasEdicion').style.display = modoEdicion ? 'inline-flex' : 'none';
+                    document.getElementById('ayudaEdicion').style.display = modoEdicion ? 'block' : 'none';
+                    document.getElementById('contenedorBtnSiguiente').style.display = modoEdicion ? 'none' : 'block';
+                    btnEd.textContent = modoEdicion ? '❌ Cancelar Edición' : '✏️ Editar Sala';
+                    btnEd.classList.toggle('activo', modoEdicion);
+                    if (!modoEdicion) cargarSala(); else renderizarSala();
+                };
+                document.getElementById('btnGuardarSala').onclick = async () => {
+                    const butacas = new Array();
+                    grillaSala.forEach((f, iF) => {
+                        const letra = ABECEDARIO.charAt(iF) || `F${iF + 1}`;
+                        f.forEach((c, iC) => { if (c.esButaca) butacas.push({ posicionX: letra, posicionY: iC + 1, disponibilidad: c.disponibilidad }); });
+                    });
+                    try {
+                        const resp = await fetch(GUARDAR_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ butacas }) });
+                        const res = await resp.json();
+                        if (resp.ok) {
+                            alert('✅ ¡Diagrama de la sala guardado correctamente!');
+                            btnEd.click();
+                        } else alert('Error: ' + (res.messages?.error || 'No se pudo guardar'));
+                    } catch (e) { alert('Error de conexión al guardar la sala.'); }
+                };
+            }
+            document.getElementById('btnSiguiente').onclick = () => {
+                localStorage.setItem('asientos_muvi', JSON.stringify(asientosSeleccionados));
+                window.location.href = `${BASE_URL}/combos`;
+            };
+            cargarSala();
+        });
+    </script>
+    <?= view('templates/footer') ?>
+</body>
+</html>

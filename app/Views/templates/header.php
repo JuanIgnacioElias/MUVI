@@ -20,8 +20,8 @@
             <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Entradas</a></li>
             <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Cartelera</a></li>
             <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Combos</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Boletería</a></li>
-        </ul>
+            <li class="nav-item"><a href="<?=site_url('pago')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">🛒Pago</a></li>
+        </ul><a  
         <div class="d-flex align-items-center text-white">
             <?php if (session()->get('isLoggedIn')): ?>
                 <span class="me-3 small">Bienvenido <?= esc(strtok(session()->get('name') ?? '', ' ')) ?>!!!</span>

@@ -27,8 +27,10 @@ class ButacaController extends BaseController
     public function mostrarPantalla()
     {
         $id_sala = $this->request->getGet('id_sala') ?? 1;
-        $rol = strtoupper((string) session()->get('rol'));
-        $puedeEditar = in_array($rol, ['EMPLEADO', 'ADMINISTRADOR']);
+        
+        // Leemos 'role' igual que en tu RoleFilter.php
+        $rol = strtoupper((string) session()->get('role'));
+        $puedeEditar = in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true);
 
         return view('butacas/index', [
             'id_sala'     => $id_sala,
@@ -112,8 +114,9 @@ class ButacaController extends BaseController
     // --- GUARDAR MAPA EDITADO POR EMPLEADO O ADMINISTRADOR ---
     public function guardarMapa($id_sala)
     {
-        $rol = strtoupper((string) session()->get('rol')); 
-        if (!in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'])) {
+        // Leemos 'role' igual que en tu RoleFilter.php
+        $rol = strtoupper((string) session()->get('role')); 
+        if (!in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true)) {
             return $this->failForbidden('No tenés permisos para modificar la sala.');
         }
 
@@ -127,7 +130,6 @@ class ButacaController extends BaseController
         $db = \Config\Database::connect();
         $db->transStart();
 
-        // Borramos la configuración anterior de esa sala y guardamos la nueva
         $this->butacaModel->where('id_sala', $id_sala)->delete();
 
         $loteInsertar = [];
