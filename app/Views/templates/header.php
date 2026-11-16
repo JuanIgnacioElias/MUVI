@@ -17,9 +17,9 @@
             <img src="<?= base_url('assets/img/MUVILOGAZO.png') ?>" alt="Logo" width="120px" height="65px">
         </a>
         <ul class="nav justify-content-center flex-grow-1 d-none d-md-flex gap-4 m-0 p-0">
-            <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Entradas</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Cartelera</a></li>
-            <li class="nav-item"><a href="#" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Combos</a></li>
+            <li class="nav-item"><a href="<?=site_url('compras')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Compras</a></li>
+            <li class="nav-item"><a href="<?=site_url('funcion')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Cartelera</a></li>
+            <li class="nav-item"><a href="<?=site_url('combos')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Combos</a></li>
             <li class="nav-item"><a href="<?=site_url('pago')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">🛒Pago</a></li>
         </ul><a  
         <div class="d-flex align-items-center text-white">

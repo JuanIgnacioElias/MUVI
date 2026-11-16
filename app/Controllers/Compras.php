@@ -13,13 +13,14 @@ class Compras extends BaseController
  // R: listado
     public function index()
     {
+        
         $rol = session()->get('role');
 
         $builder = $this->compras
             ->orderBy('fecha_compra', 'DESC');
 
         if ($rol === 'CLIENTE') {
-            $builder->where('user_id', session()->get('id'));
+            $builder->where('id', session()->get('id'));
         } elseif (! in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true)) {
             return redirect()->to('/login');
         }
