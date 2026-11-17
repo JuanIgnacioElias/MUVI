@@ -1,0 +1,20 @@
+    body { background-color: #0b0202; font-family: Arial, sans-serif; padding: 20px; color: white; }
+    .combos-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto 20px; }
+    .btn-admin { background: #b11e1e; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-weight: bold; }
+    .btn-admin:hover { background: #d12a2a; }
+    .alerta { max-width: 1200px; margin: 0 auto 15px; padding: 10px 15px; border-radius: 4px; }
+    .alerta.ok { background: #14532d; }
+    .alerta.error { background: #7f1d1d; }
+    .combos-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 1200px; margin: 0 auto; }
+    .combo-card { background-color: #3d0c0c; border: 2px solid #5a1414; border-radius: 4px; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; gap: 15px; cursor: pointer; color: white; }
+    .combo-card.seleccionado { border-color: #ff4d4d; background-color: #5a1414; }
+    .combo-check { width: 22px; height: 22px; accent-color: #ff4d4d; cursor: pointer; flex-shrink: 0; }
+    .combo-info { display: flex; gap: 20px; flex-grow: 1; justify-content: center; }
+    .combo-item { text-align: center; }
+    .combo-img { max-height: 60px; display: block; margin-top: 5px; }
+    .combo-price { font-size: 1.6rem; font-weight: 900; }
+    .no-combos { color: #8c8c8c; text-align: center; grid-column: span 2; font-size: 1.2rem; }
+    .combos-footer { max-width: 1200px; margin: 25px auto 0; display: flex; justify-content: space-between; align-items: center; }
+    .combos-total { font-size: 1.3rem; }
+    .btn-continuar { background: #b11e1e; color: white; border: 0; padding: 10px 28px; font-size: 1.1rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .btn-continuar:disabled { background: #444; color: #999; cursor: not-allowed; }
