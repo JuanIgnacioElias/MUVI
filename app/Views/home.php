@@ -16,6 +16,24 @@
             <?php endif; ?>
         </div>
     </div>
+  <?php if (! empty($peliculas)): ?>
+  <!-- Películas cargadas en la base de datos: cada una lleva a su página de detalle -->
+  <section class="contenedor-peliculas">
+    <?php foreach ($peliculas as $pelicula): ?>
+    <article class="tarjeta-pelicula">
+      <a href="<?= site_url('peliculas/' . (int) $pelicula['id_pelicula']) ?>" class="text-decoration-none text-dark w-100">
+        <div class="poster">
+          <?php if (! empty($pelicula['imagen'])): ?>
+            <img src="<?= esc(base_url($pelicula['imagen']), 'attr') ?>" alt="<?= esc($pelicula['titulo'], 'attr') ?>">
+          <?php endif; ?>
+        </div>
+        <h3><?= esc($pelicula['titulo']) ?></h3>
+      </a>
+    </article>
+    <?php endforeach; ?>
+  </section>
+  <p class="text-center mt-3"><a href="<?= site_url('peliculas') ?>">Ver todas las películas</a></p>
+  <?php else: ?>
   <section class="contenedor-peliculas">
     <!-- Película 1 -->
     <article class="tarjeta-pelicula">
@@ -57,6 +75,7 @@
       <h3>Coyote vs ACME</h3>
     </article>
   </section>
+  <?php endif; ?>
 
 </div>
 <a  href= <?=site_url('compras')?>>compras</a>

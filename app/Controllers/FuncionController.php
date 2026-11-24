@@ -39,7 +39,14 @@ class FuncionController extends BaseController
     // LISTAR TODAS LAS FUNCIONES (Muestra la tabla principal)
     public function index()
     {
-        $data['funciones'] = $this->FuncionModel->findAll();
+        // Con el título de la película y el nombre de la sala (en vez de solo los IDs).
+        $data['funciones'] = $this->FuncionModel
+            ->select('funciones.*, peliculas.titulo AS pelicula, salas.nombre AS sala')
+            ->join('peliculas', 'peliculas.id_pelicula = funciones.id_pelicula', 'left')
+            ->join('salas', 'salas.id_sala = funciones.id_sala', 'left')
+            ->orderBy('funciones.fecha', 'ASC')
+            ->orderBy('funciones.hora_ingreso', 'ASC')
+            ->findAll();
 
         // El rol sale de la sesión (lo guarda Auth::processLogin en la clave 'role').
         $data['rol_usuario'] = strtoupper((string) session()->get('role'));
@@ -150,13 +157,10 @@ class FuncionController extends BaseController
             return redirect()->to('/funcion')
                              ->with('error', 'La función solicitada no existe.');
         }
-// Guardamos la función y su sala en sesión
-session()->set([
-    'id_funcion' => (int) $funcion['id_funcion'],
-    'id_sala'    => (int) $funcion['id_sala'],
-]);
 
-return redirect()->to('/butacas?id_sala=' . $funcion['id_sala']);
-       
+        // Queda guardada para los pasos siguientes (butacas, compra)
+        session()->set('id_funcion', (int) $funcion['id_funcion']);
+
+        return redirect()->to('/sala');
     }
 }

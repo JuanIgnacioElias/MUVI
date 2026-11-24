@@ -22,6 +22,11 @@
                 </a>
             </li>
             <li>
+                <a href="<?= base_url('admin/peliculas') ?>">
+                    Gestionar películas
+                </a>
+            </li>
+            <li>
                 <a href="<?= base_url('empleado/pedidos') ?>">
                     Consultar pedidos
                 </a>

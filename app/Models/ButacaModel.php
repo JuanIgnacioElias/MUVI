@@ -15,7 +15,6 @@ class ButacaModel extends Model
         'posicionX', 
         'posicionY', 
         'disponibilidad', 
-        'id_entrada', 
         'id_sala'
     ];
 

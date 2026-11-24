@@ -13,7 +13,6 @@ class CreateButaca extends Migration
         'posicionX' => ['type'=> 'VARCHAR','constraint' => '2',],
         'posicionY' => ['type'=> 'INT',],
             'disponibilidad' => ['type'=> 'BOOLEAN',],
-            'id_entrada' => ['type'=> 'INT','unsigned'=> true, ],
             'id_sala' => ['type'=> 'INT','unsigned'   => true,],
             'created_at' => ['type' => 'DATETIME','null' => true,],
             'updated_at' => ['type' => 'DATETIME','null' => true,],

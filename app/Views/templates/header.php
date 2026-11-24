@@ -18,6 +18,7 @@
         </a>
         <ul class="nav justify-content-center flex-grow-1 d-none d-md-flex gap-4 m-0 p-0">
             <li class="nav-item"><a href="<?=site_url('compras')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Compras</a></li>
+            <li class="nav-item"><a href="<?=site_url('peliculas')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Películas</a></li>
             <li class="nav-item"><a href="<?=site_url('funcion')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Cartelera</a></li>
             <li class="nav-item"><a href="<?=site_url('combos')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">Combos</a></li>
             <li class="nav-item"><a href="<?=site_url('pago')?>" class="nav-link text-white fw-bold custom-nav-link text-uppercase">🛒Pago</a></li>

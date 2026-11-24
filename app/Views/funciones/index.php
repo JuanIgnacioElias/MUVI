@@ -37,8 +37,8 @@
                         <th>ID</th>
                         <th>Fecha</th>
                         <th>Horario</th>
-                        <th>Sala ID</th>
-                        <th>Película ID</th>
+                        <th>Sala</th>
+                        <th>Película</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -52,8 +52,12 @@
                                 <span class="badge bg-success"><?= substr($funcion['hora_ingreso'], 0, 5) ?></span> a 
                                 <span class="badge bg-secondary"><?= substr($funcion['hora_salida'], 0, 5) ?></span>
                             </td>
-                            <td><?= esc($funcion['id_sala']) ?></td>
-                            <td><?= esc($funcion['id_pelicula']) ?></td>
+                            <td><?= esc($funcion['sala'] ?? $funcion['id_sala']) ?></td>
+                            <td>
+                                <a href="<?= site_url('peliculas/' . (int) $funcion['id_pelicula']) ?>" class="text-decoration-none fw-bold">
+                                    <?= esc($funcion['pelicula'] ?? ('#' . $funcion['id_pelicula'])) ?>
+                                </a>
+                            </td>
                             <td class="text-center">
                                 <?php if ($puedeGestionar): ?>
                                     <!-- Empleado y administrador: editar y eliminar -->

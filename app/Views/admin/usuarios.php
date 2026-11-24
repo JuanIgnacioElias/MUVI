@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Panel Admin - Gestión de Usuarios</title>
-    <!-- Agrego un estilo CSS básico y limpio para que sea legible -->
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f6f9; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }

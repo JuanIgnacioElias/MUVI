@@ -19,11 +19,11 @@ class Compras extends BaseController
         $builder = $this->compras
             ->orderBy('fecha_compra', 'DESC');
 
-        if ($rol === 'CLIENTE') {
-            $builder->where('id', session()->get('id'));
-        } elseif (! in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true)) {
-            return redirect()->to('/login');
-        }
+            if ($rol === 'CLIENTE') {
+                
+            } elseif (! in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true)) {
+                return redirect()->to('/login');
+            }
 
         return view('compras/index', [
             'compras' => $builder->findAll(),

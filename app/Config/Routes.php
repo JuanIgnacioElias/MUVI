@@ -99,6 +99,24 @@ $routes->group('funcion', [
     $routes->get('delete/(:num)', 'FuncionController::delete/$1');
 });
 
+// Películas
+// Cualquiera puede ver el catálogo y el detalle de una película
+// (el detalle incluye las funciones programadas de esa película).
+$routes->get('peliculas', 'PeliculaController::catalogo');
+$routes->get('peliculas/(:num)', 'PeliculaController::detalle/$1');
+
+// Solo el administrador puede agregar, editar y eliminar películas
+$routes->group('admin/peliculas', [
+    'filter' => 'verificarRol:ADMINISTRADOR'
+], static function ($routes) {
+    $routes->get('', 'PeliculaController::administrar');
+    $routes->get('nueva', 'PeliculaController::nueva');
+    $routes->post('guardar', 'PeliculaController::guardar');
+    $routes->get('editar/(:num)', 'PeliculaController::editar/$1');
+    $routes->post('actualizar/(:num)', 'PeliculaController::actualizar/$1');
+    $routes->post('eliminar/(:num)', 'PeliculaController::eliminar/$1');
+});
+
 $routes->get('admin/salas/(:num)', 'ButacaController::editor/$1');
 $routes->post('admin/salas/guardar/(:num)', 'ButacaController::guardarMapa/$1');
 
