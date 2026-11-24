@@ -2,36 +2,89 @@
     <div class="container mt-5" style="max-width: 650px;">
         
         <?php 
-        // 1. Instanciamos la sesión nativa
         $session = session();
         
-        // 2. Capturamos la variable exacta que definiste en tu filtro, pasándola a mayúsculas
+        // Capturamos la variable exacta que definiste en tu filtro, pasándola a mayúsculas
         $rolUsuario = strtoupper((string) $session->get('role')); 
 
-        // 3. Condición de Seguridad formal: Si es ADMINISTRADOR o EMPLEADO
+        // Condición de Seguridad formal: Si es ADMINISTRADOR o EMPLEADO
         $esPersonalCine = ($rolUsuario === 'ADMINISTRADOR' || $rolUsuario === 'EMPLEADO'); 
         
         if (!$esPersonalCine): ?>
             
-            <!-- =============================================================== -->
-            <!-- VISTA DEL CLIENTE: Formulario de Pago directo                   -->
+                        <!-- =============================================================== -->
+            <!-- VISTA DEL CLIENTE: Resumen de Compra y Formulario de Pago       -->
             <!-- =============================================================== -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-dark text-white text-center py-3">
                     <h3 class="card-title mb-0">💳 Finalizar tu Compra</h3>
                 </div>
                 <div class="card-body p-4 bg-white">
+
+                    <!-- DETALLE / HISTORIAL DE LO QUE VA A PAGAR -->
+                    <div class="mb-4 p-3 bg-light rounded border">
+                        <h5 class="fw-bold text-dark mb-3">🧾 Resumen de tu Pedido</h5>
+
+                        <?php if (!empty($resumen['funcion'])): ?>
+                            <div class="mb-2 pb-2 border-bottom">
+                                <strong>🎬 Película:</strong> <?= esc($resumen['funcion']['pelicula_titulo'] ?? 'Función #' . $resumen['funcion']['id_funcion']) ?><br>
+                                <small class="text-muted">
+                                    📅 <?= date('d/m/Y', strtotime($resumen['funcion']['fecha'])) ?> | 
+                                    🕒 <?= substr($resumen['funcion']['hora_ingreso'], 0, 5) ?> hs | 
+                                    📍 <?= esc($resumen['funcion']['sala_nombre'] ?? 'Sala ' . $resumen['funcion']['id_sala']) ?>
+                                </small>
+                            </div>
+                        <?php endif; ?>
+
+                        <ul class="list-group list-group-flush mb-2">
+                            <!-- Entradas -->
+                            <?php if ($resumen['entradas_cant'] > 0): ?>
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong>🎟️ Entradas (x<?= $resumen['entradas_cant'] ?>)</strong>
+                                        <span class="badge <?= $resumen['entradas_es_4d'] ? 'bg-danger' : 'bg-secondary' ?> ms-1">
+                                            <?= $resumen['entradas_es_4d'] ? 'Sala 4D' : 'Estándar' ?>
+                                        </span>
+                                        <div class="small text-muted">
+                                            Butacas: <?= esc(implode(', ', $resumen['butacas'])) ?> ($<?= number_format($resumen['entrada_unit'], 0, ',', '.') ?> c/u)
+                                        </div>
+                                    </div>
+                                    <span class="fw-bold">$<?= number_format($resumen['entradas_total'], 0, ',', '.') ?></span>
+                                </li>
+                            <?php endif; ?>
+
+                            <!-- Combos -->
+                            <?php if (!empty($resumen['combos'])): ?>
+                                <?php foreach ($resumen['combos'] as $c): ?>
+                                    <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <strong>🍿 Combo:</strong> <?= esc($c['comida']) ?> + <?= esc($c['bebida']) ?>
+                                        </div>
+                                        <span class="fw-bold">$<?= number_format($c['precio'], 0, ',', '.') ?></span>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+
+                            <?php if ($resumen['entradas_cant'] === 0 && empty($resumen['combos'])): ?>
+                                <li class="list-group-item bg-transparent text-muted text-center px-0">
+                                    No hay entradas ni combos seleccionados todavía.
+                                </li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+
                     <form action="<?= base_url('pago/guardarWeb') ?>" method="POST">
                         <?= csrf_field() ?>
                      
-                        <!-- MONTO AUTOMÁTICO DESDE EL CARRITO -->
+                        <!-- MONTO AUTOMÁTICO CALCULADO EN EL SERVIDOR -->
                         <div class="mb-4">
                             <label class="form-label fw-bold text-secondary">Monto Total a Pagar:</label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text bg-light text-dark fw-bold">$</span>
-                                <input type="number" id="monto_input" name="monto" class="form-control bg-light fw-bold text-dark" readonly required>
+                                <input type="number" id="monto_input" name="monto" 
+                                       value="<?= (int) round($resumen['total_general']) ?>" 
+                                       class="form-control bg-light fw-bold text-dark" readonly required>
                             </div>
-                            <small class="text-muted d-block mt-1">Este valor calcula automáticamente tus entradas y combos seleccionados.</small>
                         </div>
 
                         <!-- MONEDA -->
@@ -58,8 +111,11 @@
                         <input type="hidden" name="estado" value="Pendiente">
 
                         <div class="d-grid gap-2 mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg" id="btn-confirmar">Confirmar Pago</button>
-                            <a href="<?= base_url('cartelera') ?>" class="btn btn-link text-muted text-center mt-2">Volver a la Cartelera</a>
+                            <button type="submit" class="btn btn-primary btn-lg" id="btn-confirmar"
+                                    <?= ($resumen['total_general'] <= 0) ? 'disabled' : '' ?>>
+                                Confirmar Pago
+                            </button>
+                            <a href="<?= base_url('funcion') ?>" class="btn btn-link text-muted text-center mt-2">Volver a la Cartelera</a>
                         </div>
                     </form>
                 </div>

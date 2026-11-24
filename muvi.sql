@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-10-2026 a las 02:08:21
+-- Tiempo de generación: 16-11-2026 a las 23:09:29
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -32,11 +32,25 @@ CREATE TABLE `butacas` (
   `posicionX` varchar(2) NOT NULL,
   `posicionY` int(11) NOT NULL,
   `disponibilidad` tinyint(1) NOT NULL,
-  `id_compra` int(10) UNSIGNED NOT NULL,
+  `id_entrada` int(10) UNSIGNED NOT NULL,
   `id_sala` int(10) UNSIGNED NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `butacas`
+--
+
+INSERT INTO `butacas` (`id_butaca`, `posicionX`, `posicionY`, `disponibilidad`, `id_entrada`, `id_sala`, `created_at`, `updated_at`) VALUES
+(20, 'B', 1, 1, 0, 1, '2026-11-16 20:55:42', '2026-11-16 20:55:42'),
+(21, 'B', 2, 1, 0, 1, '2026-11-16 20:55:42', '2026-11-16 20:55:42'),
+(22, 'B', 3, 1, 0, 1, '2026-11-16 20:55:42', '2026-11-16 20:55:42'),
+(23, 'B', 4, 1, 0, 1, '2026-11-16 20:55:42', '2026-11-16 20:55:42'),
+(25, 'B', 7, 1, 0, 1, '2026-11-16 20:55:42', '2026-11-16 20:55:42'),
+(26, 'B', 8, 1, 0, 1, '2026-11-16 20:55:42', '2026-11-16 20:55:42'),
+(199, 'B', 6, 1, 0, 1, '2026-11-16 20:56:14', '2026-11-16 20:56:14'),
+(215, 'B', 9, 1, 0, 1, '2026-11-16 20:57:34', '2026-11-16 20:57:34');
 
 -- --------------------------------------------------------
 
@@ -48,9 +62,21 @@ CREATE TABLE `combo` (
   `id_combo` int(10) UNSIGNED NOT NULL,
   `comida` varchar(20) NOT NULL,
   `bebida` varchar(20) NOT NULL,
+  `precio` decimal(10,2) NOT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `combo`
+--
+
+INSERT INTO `combo` (`id_combo`, `comida`, `bebida`, `precio`, `created_at`, `updated_at`) VALUES
+(1, 'pochoclos', 'gaseosa_lata', 7000.00, NULL, NULL),
+(2, 'pochoclos', 'gaseosa botella 2L', 10000.00, NULL, NULL),
+(3, 'hamburguesa', 'gaseosa botella 2L', 9000.00, NULL, NULL),
+(4, 'Pancho', 'Gaseosa Lata', 9000.00, NULL, NULL),
+(5, 'Pancho', 'Gaseosa Botella 2L', 9000.00, '2026-11-11 20:21:36', '2026-11-11 20:21:36');
 
 -- --------------------------------------------------------
 
@@ -110,6 +136,14 @@ CREATE TABLE `funciones` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `funciones`
+--
+
+INSERT INTO `funciones` (`id_funcion`, `fecha`, `hora_ingreso`, `hora_salida`, `id_sala`, `id_pelicula`, `created_at`, `updated_at`) VALUES
+(1, '2026-11-03', '20:30:00', '22:30:00', 1, 1, NULL, NULL),
+(2, '2026-12-02', '22:00:00', '00:00:00', 1, 1, '2026-11-11 19:40:52', '2026-11-11 19:40:52');
+
 -- --------------------------------------------------------
 
 --
@@ -131,16 +165,16 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`, `batch`) VALUES
-(43, '2026-09-29-192909', 'App\\Database\\Migrations\\CreateCompras', 'default', 'App', 1792541232, 1),
-(44, '2026-10-02-172034', 'App\\Database\\Migrations\\CreateUsuarios', 'default', 'App', 1792541232, 1),
-(45, '2026-10-07-204214', 'App\\Database\\Migrations\\CreatePeliculas', 'default', 'App', 1792541232, 1),
-(46, '2026-10-07-204214', 'App\\Database\\Migrations\\CreateSalas', 'default', 'App', 1792541232, 1),
-(47, '2026-10-08-204214', 'App\\Database\\Migrations\\CreateFunciones', 'default', 'App', 1792541232, 1),
-(48, '2026-10-09-173758', 'App\\Database\\Migrations\\CreatePago', 'default', 'App', 1792541232, 1),
-(49, '2026-10-09-175145', 'App\\Database\\Migrations\\CreateCombo', 'default', 'App', 1792541232, 1),
-(50, '2026-10-09-175854', 'App\\Database\\Migrations\\CreateButaca', 'default', 'App', 1792541232, 1),
-(51, '2026-10-10-130000', 'App\\Database\\Migrations\\CreateComboCompra', 'default', 'App', 1792541232, 1),
-(52, '2026-10-16-224800', 'App\\Database\\Migrations\\CreateCompraButaca', 'default', 'App', 1792541232, 1);
+(53, '2026-09-29-192909', 'App\\Database\\Migrations\\CreateCompras', 'default', 'App', 1793399262, 1),
+(54, '2026-10-02-172034', 'App\\Database\\Migrations\\CreateUsuarios', 'default', 'App', 1793399262, 1),
+(55, '2026-10-07-204214', 'App\\Database\\Migrations\\CreatePeliculas', 'default', 'App', 1793399262, 1),
+(56, '2026-10-07-204214', 'App\\Database\\Migrations\\CreateSalas', 'default', 'App', 1793399262, 1),
+(57, '2026-10-08-204214', 'App\\Database\\Migrations\\CreateFunciones', 'default', 'App', 1793399262, 1),
+(58, '2026-10-09-173758', 'App\\Database\\Migrations\\CreatePago', 'default', 'App', 1793399262, 1),
+(59, '2026-10-09-175145', 'App\\Database\\Migrations\\CreateCombo', 'default', 'App', 1793399262, 1),
+(60, '2026-10-09-175854', 'App\\Database\\Migrations\\CreateButaca', 'default', 'App', 1793399830, 2),
+(61, '2026-10-10-130000', 'App\\Database\\Migrations\\CreateComboCompra', 'default', 'App', 1793399830, 2),
+(62, '2026-10-16-224800', 'App\\Database\\Migrations\\CreateCompraButaca', 'default', 'App', 1793399831, 2);
 
 -- --------------------------------------------------------
 
@@ -157,6 +191,13 @@ CREATE TABLE `pagos` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pagos`
+--
+
+INSERT INTO `pagos` (`id_pago`, `monto`, `moneda`, `metodo_pago`, `estado`, `created_at`, `updated_at`) VALUES
+(1, 500, 'Robux', 'yellow card', 'Pendiente', '2026-11-03 22:10:15', '2026-11-03 22:10:15');
 
 -- --------------------------------------------------------
 
@@ -175,6 +216,13 @@ CREATE TABLE `peliculas` (
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `peliculas`
+--
+
+INSERT INTO `peliculas` (`id_pelicula`, `titulo`, `sinopsis`, `duracion`, `clasificacion`, `trailer_url`, `created_at`, `updated_at`) VALUES
+(1, 'Jumanji', 'La película Jumanji (1995) trata sobre Alan Parrish, un niño que en 1969 descubre un misterioso juego 		de mesa y es mágicamente absorbido por su jungla interior tras tirar los dados.', 120, 'Aventura', 'https://www.youtube.com/watch?v=KcgsDnt3CIw', NULL, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -189,6 +237,13 @@ CREATE TABLE `salas` (
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `salas`
+--
+
+INSERT INTO `salas` (`id_sala`, `nombre`, `capacidad`, `tipo_sala`, `created_at`, `updated_at`) VALUES
+(1, 'Sala 1', 250, 3.00, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -209,6 +264,14 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Volcado de datos para la tabla `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `last_name`, `email`, `password`, `cuil`, `role`, `created_at`, `updated_at`) VALUES
+(1, 'Juan', 'Elias', 'juanelias@alumnos.itr3.edu.ar', '$2y$10$x2lWXR.bTaFrWYFaTS4b2es1C0aCjn6RlVucFlO4MwW8YxlsS8xuO', '12345678912', 'ADMINISTRADOR', '2026-10-30 23:04:27', '2026-10-30 23:04:27'),
+(2, 'Joaquin', 'Carranza', 'joaquincarranza@alumnos.itr3.edu.ar', '$2y$10$MHx7lAEg7Tur1rWGp.xbo.qkSH7HlnfaXwAbqdgzch1EdUhnz5V8m', '12121212121', 'CLIENTE', '2026-11-02 21:59:52', '2026-11-02 21:59:52');
+
+--
 -- Índices para tablas volcadas
 --
 
@@ -217,7 +280,6 @@ CREATE TABLE `users` (
 --
 ALTER TABLE `butacas`
   ADD PRIMARY KEY (`id_butaca`),
-  ADD KEY `butacas_id_compra_foreign` (`id_compra`),
   ADD KEY `butacas_id_sala_foreign` (`id_sala`);
 
 --
@@ -295,13 +357,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT de la tabla `butacas`
 --
 ALTER TABLE `butacas`
-  MODIFY `id_butaca` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_butaca` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=216;
 
 --
 -- AUTO_INCREMENT de la tabla `combo`
 --
 ALTER TABLE `combo`
-  MODIFY `id_combo` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_combo` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `compras`
@@ -319,37 +381,37 @@ ALTER TABLE `compra_butaca`
 -- AUTO_INCREMENT de la tabla `funciones`
 --
 ALTER TABLE `funciones`
-  MODIFY `id_funcion` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_funcion` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id_pago` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pago` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `peliculas`
 --
 ALTER TABLE `peliculas`
-  MODIFY `id_pelicula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pelicula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `salas`
 --
 ALTER TABLE `salas`
-  MODIFY `id_sala` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id_sala` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas
@@ -359,7 +421,6 @@ ALTER TABLE `users`
 -- Filtros para la tabla `butacas`
 --
 ALTER TABLE `butacas`
-  ADD CONSTRAINT `butacas_id_compra_foreign` FOREIGN KEY (`id_compra`) REFERENCES `compras` (`id_compra`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `butacas_id_sala_foreign` FOREIGN KEY (`id_sala`) REFERENCES `salas` (`id_sala`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --

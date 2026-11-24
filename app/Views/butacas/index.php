@@ -48,10 +48,14 @@
             <div class="leyenda-item"><div class="leyenda-color seleccionada"></div><span>Tu Selección</span></div>
             <div class="leyenda-item"><div class="leyenda-color ocupada"></div><span>Ocupado</span></div>
         </div>
-
-        <div class="contenedor-boton-siguiente" id="contenedorBtnSiguiente">
-            <button id="btnSiguiente" class="btn-siguiente-flujo" disabled>Siguiente</button>
+               <div class="contenedor-boton-siguiente" id="contenedorBtnSiguiente">
+            <form action="<?= base_url('butacas/seleccionar') ?>" method="POST" id="formSeleccionButacas">
+                <?= csrf_field() ?>
+                <input type="hidden" name="asientos" id="inputAsientosSeleccionados">
+                <button type="submit" id="btnSiguiente" class="btn-siguiente-flujo" disabled>Siguiente</button>
+            </form>
         </div>
+
     </div>
            <script>
         
@@ -182,26 +186,55 @@
                     if (!modoEdicion) cargarSala(); else renderizarSala();
                 };
                 document.getElementById('btnGuardarSala').onclick = async () => {
-                    const butacas = new Array();
+                    const butacas = [];
                     grillaSala.forEach((f, iF) => {
                         const letra = ABECEDARIO.charAt(iF) || `F${iF + 1}`;
-                        f.forEach((c, iC) => { if (c.esButaca) butacas.push({ posicionX: letra, posicionY: iC + 1, disponibilidad: c.disponibilidad }); });
+                        f.forEach((c, iC) => { 
+                            if (c.esButaca) butacas.push({ posicionX: letra, posicionY: iC + 1, disponibilidad: c.disponibilidad }); 
+                        });
                     });
+
                     try {
-                        const resp = await fetch(GUARDAR_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ butacas }) });
+                        const resp = await fetch(GUARDAR_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': '<?= csrf_hash() ?>'
+                            },
+                            body: JSON.stringify({
+                                '<?= csrf_token() ?>': '<?= csrf_hash() ?>',
+                                butacas: butacas
+                            })
+                        });
+                        
                         const res = await resp.json();
                         if (resp.ok) {
                             alert('✅ ¡Diagrama de la sala guardado correctamente!');
                             btnEd.click();
-                        } else alert('Error: ' + (res.messages?.error || 'No se pudo guardar'));
-                    } catch (e) { alert('Error de conexión al guardar la sala.'); }
+                        } else {
+                            const detalle = (res.messages && res.messages.error) ? res.messages.error : (res.message || JSON.stringify(res));
+                            alert('Error: ' + detalle);
+                        }
+                    } catch (e) { 
+                        alert('Error de conexión al guardar la sala.'); 
+                    }
                 };
+
             }
             document.getElementById('btnSiguiente').onclick = () => {
                 localStorage.setItem('asientos_muvi', JSON.stringify(asientosSeleccionados));
                 window.location.href = `${BASE_URL}/combos`;
             };
             cargarSala();
+        });
+        document.getElementById('formSeleccionButacas')?.addEventListener('submit', function(e) {
+            if (asientosSeleccionados.length === 0) {
+                e.preventDefault();
+                alert('Por favor seleccioná al menos una butaca.');
+                return;
+            }
+            document.getElementById('inputAsientosSeleccionados').value = JSON.stringify(asientosSeleccionados);
         });
     </script>
     <?= view('templates/footer') ?>

@@ -150,4 +150,11 @@ class ComboController extends BaseController
             'message' => 'Combo eliminado correctamente.'
         ], 200);
     }
+        // CLIENTE: pasa a pago sin seleccionar combos
+        public function omitir()
+        {
+            session()->remove(['combos_seleccionados', 'combos_total']);
+            return redirect()->to(base_url('pago'));
+        }
+    
 }

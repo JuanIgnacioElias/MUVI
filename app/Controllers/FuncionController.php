@@ -150,10 +150,13 @@ class FuncionController extends BaseController
             return redirect()->to('/funcion')
                              ->with('error', 'La función solicitada no existe.');
         }
+// Guardamos la función y su sala en sesión
+session()->set([
+    'id_funcion' => (int) $funcion['id_funcion'],
+    'id_sala'    => (int) $funcion['id_sala'],
+]);
 
-        // Queda guardada para los pasos siguientes (butacas, compra)
-        session()->set('id_funcion', (int) $funcion['id_funcion']);
-
-        return redirect()->to('/sala');
+return redirect()->to('/butacas?id_sala=' . $funcion['id_sala']);
+       
     }
 }

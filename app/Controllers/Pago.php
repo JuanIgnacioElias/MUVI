@@ -27,10 +27,60 @@ class Pago extends BaseController
      */
     public function index()
     {
-        $data['pagos'] = $this->pagoModel->findAll();
+        $db = db_connect();
+        $session = session();
+
+        // 1. Datos de la Función, Película y Sala
+        $funcionDetalle = null;
+        $idFuncion = $session->get('id_funcion');
+        if ($idFuncion) {
+            $funcionDetalle = $db->table('funciones f')
+                ->select('f.*, p.titulo AS pelicula_titulo, s.nombre AS sala_nombre, s.tipo_sala')
+                ->join('peliculas p', 'p.id_pelicula = f.id_pelicula', 'left')
+                ->join('salas s', 's.id_sala = f.id_sala', 'left')
+                ->where('f.id_funcion', $idFuncion)
+                ->get()
+                ->getRowArray();
+        }
+
+        // 2. Datos de las Entradas / Butacas
+        $butacas         = $session->get('butacas_seleccionadas') ?? [];
+        $entradasCant    = (int) ($session->get('entradas_cantidad') ?? 0);
+        $entradaUnit     = (float) ($session->get('entrada_precio_unit') ?? 0);
+        $entradasEs4D    = (bool) ($session->get('entradas_es_4d') ?? false);
+        $entradasTotal   = (float) ($session->get('entradas_total') ?? 0);
+
+        // 3. Datos de los Combos elegidos
+        $combosDetalle = [];
+        $idsCombos = $session->get('combos_seleccionados') ?? [];
+        if (!empty($idsCombos)) {
+            $combosDetalle = $db->table('combo')
+                ->whereIn('id_combo', $idsCombos)
+                ->get()
+                ->getResultArray();
+        }
+        $combosTotal = (float) ($session->get('combos_total') ?? 0);
+
+        // 4. Suma Total Final
+        $totalGeneral = $entradasTotal + $combosTotal;
+
+        $data = [
+            'pagos' => $this->pagoModel->findAll(),
+            'resumen' => [
+                'funcion'        => $funcionDetalle,
+                'butacas'        => $butacas,
+                'entradas_cant'  => $entradasCant,
+                'entrada_unit'   => $entradaUnit,
+                'entradas_es_4d' => $entradasEs4D,
+                'entradas_total' => $entradasTotal,
+                'combos'         => $combosDetalle,
+                'combos_total'   => $combosTotal,
+                'total_general'  => $totalGeneral,
+            ]
+        ];
+
         return view('Pago/index', $data); 
     }
-
     /**
      * Muestra el formulario alternativo para crear un pago.
      * Nota: Mantenido por compatibilidad estructural del sistema.
@@ -52,6 +102,20 @@ class Pago extends BaseController
             'metodo_pago' => $this->request->getPost('metodo_pago'),
             'estado'      => $this->request->getPost('estado'),
         ];
+
+        if ($this->pagoModel->insert($data)) {
+            // Limpiamos el carrito de la sesión tras confirmar el pago
+            session()->remove([
+                'id_funcion', 'id_sala', 'butacas_seleccionadas',
+                'entradas_cantidad', 'entrada_precio_unit', 'entradas_es_4d',
+                'entradas_total', 'combos_seleccionados', 'combos_total'
+            ]);
+
+            return redirect()->to(base_url('funcion'))->with('success', '¡Su pago ha sido registrado con éxito! Disfrute la función.');
+        }
+
+        return redirect()->back()->withInput()->with('errors', $this->pagoModel->errors());
+    
 
         if ($this->pagoModel->insert($data)) {
             // Guardamos una señal flash temporal que el JavaScript de la vista leerá para vaciar el localStorage

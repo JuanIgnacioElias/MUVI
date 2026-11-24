@@ -26,7 +26,7 @@ class ButacaController extends BaseController
 
     public function mostrarPantalla()
     {
-        $id_sala = $this->request->getGet('id_sala') ?? 1;
+        $id_sala = $this->request->getGet('id_sala') ?? session()->get('id_sala') ?? 1;
         
         // Leemos 'role' igual que en tu RoleFilter.php
         $rol = strtoupper((string) session()->get('role'));
@@ -36,6 +36,46 @@ class ButacaController extends BaseController
             'id_sala'     => $id_sala,
             'puedeEditar' => $puedeEditar
         ]); 
+    }
+
+    // CLIENTE: recibe las butacas elegidas, calcula precio (4D vs Normal) y va a Combos
+    public function seleccionar()
+    {
+        $asientosJson = $this->request->getPost('asientos');
+        $asientos = json_decode((string) $asientosJson, true);
+
+        if (empty($asientos) || !is_array($asientos)) {
+            return redirect()->back()->with('error', 'Seleccioná al menos una butaca.');
+        }
+
+        $id_sala = session()->get('id_sala') ?? 1;
+
+        $db = db_connect();
+        $sala = $db->table('salas')->where('id_sala', $id_sala)->get()->getRowArray();
+
+        // Detectamos si la sala es 4D (por tipo_sala == 4 o si el nombre dice "4D")
+        $es4D = false;
+        if ($sala) {
+            $tipo = (float) ($sala['tipo_sala'] ?? 0);
+            $nombreSala = strtoupper((string) ($sala['nombre'] ?? ''));
+            $es4D = ($tipo >= 4.0 || str_contains($nombreSala, '4D'));
+        }
+
+        // PRECIOS FIJOS (Ajustalos a los valores de tu cine)
+        $precioUnitario = $es4D ? 8000 : 5000;
+        $cantidad       = count($asientos);
+        $totalEntradas  = $cantidad * $precioUnitario;
+
+        // Guardamos todo en la sesión para el resumen de Pago
+        session()->set([
+            'butacas_seleccionadas' => array_column($asientos, 'id'), // Ej: ['A-1', 'A-2']
+            'entradas_cantidad'     => $cantidad,
+            'entrada_precio_unit'   => $precioUnitario,
+            'entradas_es_4d'        => $es4D,
+            'entradas_total'        => $totalEntradas,
+        ]);
+
+        return redirect()->to(base_url('combos'));
     }
 
     public function show($id = null)
@@ -114,10 +154,9 @@ class ButacaController extends BaseController
     // --- GUARDAR MAPA EDITADO POR EMPLEADO O ADMINISTRADOR ---
     public function guardarMapa($id_sala)
     {
-        // Leemos 'role' igual que en tu RoleFilter.php
         $rol = strtoupper((string) session()->get('role')); 
         if (!in_array($rol, ['EMPLEADO', 'ADMINISTRADOR'], true)) {
-            return $this->failForbidden('No tenés permisos para modificar la sala.');
+            return $this->failForbidden('Sin permisos. Rol detectado: ' . ($rol ?: 'vacío'));
         }
 
         $json = $this->request->getJSON(true);
@@ -128,26 +167,40 @@ class ButacaController extends BaseController
         }
 
         $db = \Config\Database::connect();
-        $db->transStart();
 
-        $this->butacaModel->where('id_sala', $id_sala)->delete();
+        try {
+            // 1. Verificamos si existe la sala en la tabla 'salas'
+            if ($db->tableExists('salas')) {
+                $existeSala = $db->table('salas')->where('id_sala', $id_sala)->countAllResults();
+                if ($existeSala === 0) {
+                    $db->table('salas')->insert([
+                        'id_sala'   => $id_sala,
+                        'nombre'    => 'Sala ' . $id_sala,
+                        'capacidad' => count($nuevasButacas)
+                    ]);
+                }
+            }
 
-        $loteInsertar = [];
-        foreach ($nuevasButacas as $b) {
-            $loteInsertar[] = [
-                'posicionX'      => $b['posicionX'],
-                'posicionY'      => $b['posicionY'],
-                'disponibilidad' => $b['disponibilidad'] ?? 1,
-                'id_sala'        => $id_sala,
-                'id_entrada'     => null
-            ];
-        }
+            // 2. Borramos las butacas anteriores de esa sala
+            $this->butacaModel->where('id_sala', $id_sala)->delete();
 
-        $this->butacaModel->insertBatch($loteInsertar);
-        $db->transComplete();
+            // 3. Preparamos e insertamos las nuevas (sin id_entrada)
+            $loteInsertar = [];
+            foreach ($nuevasButacas as $b) {
+                $loteInsertar[] = [
+                    'posicionX'      => $b['posicionX'],
+                    'posicionY'      => $b['posicionY'],
+                    'disponibilidad' => $b['disponibilidad'] ?? 1,
+                    'id_sala'        => $id_sala
+                ];
+            }
 
-        if ($db->transStatus() === false) {
-            return $this->failServerError('Error al guardar el diseño de la sala.');
+            if (!$this->butacaModel->insertBatch($loteInsertar)) {
+                return $this->failServerError('Error Modelo: ' . json_encode($this->butacaModel->errors()));
+            }
+
+        } catch (\Throwable $e) {
+            return $this->failServerError('MySQL dice: ' . $e->getMessage());
         }
 
         return $this->respond([

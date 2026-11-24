@@ -102,6 +102,12 @@ $routes->group('funcion', [
 $routes->get('admin/salas/(:num)', 'ButacaController::editor/$1');
 $routes->post('admin/salas/guardar/(:num)', 'ButacaController::guardarMapa/$1');
 
+// Rutas de Butacas para el flujo de compra
+$routes->get('butacas', 'ButacaController::mostrarPantalla');
+$routes->post('butacas/seleccionar', 'ButacaController::seleccionar');
+
+// Ruta opcional por si el cliente no quiere combos
+$routes->get('combos/omitir', 'ComboController::omitir');
 
 
 

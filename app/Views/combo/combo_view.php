@@ -29,7 +29,7 @@
                 <label class="combo-card">
                     <input type="checkbox" name="combos[]" value="<?= (int) $combo['id_combo'] ?>"
                            data-precio="<?= (float) $combo['precio'] ?>" class="combo-check">
-
+                    
                     <div class="combo-info">
                         <!-- Comida -->
                         <div class="combo-item">
@@ -46,7 +46,7 @@
                     <div class="combo-price">
                         $<?= number_format($combo['precio'], 0, ',', '.') ?>
                     </div>
-                </label>
+</label>
             <?php endforeach; ?>
         <?php else: ?>
             <p class="no-combos">No hay combos disponibles en la base de datos.</p>
@@ -57,7 +57,8 @@
         <div class="combos-footer">
             <div class="combos-total">
                 Seleccionados: <span id="cant">0</span> &nbsp;|&nbsp; Total: <strong>$<span id="total">0</span></strong>
-            </div>
+            </div style="display: flex; gap: 10px;">
+            <a href="<?= base_url('combos/omitir') ?>" class="btn btn-outline-secondary">Continuar sin combos</a>
             <button type="submit" id="btn-continuar" class="btn-continuar" disabled>Continuar</button>
         </div>
     <?php endif; ?>
@@ -68,18 +69,18 @@
         const checks = document.querySelectorAll('.combo-check');
         const total  = document.getElementById('total');
         const cant   = document.getElementById('cant');
-        const btn    = document.getElementById('btn-continuar');
+const btn    = document.getElementById('btn-continuar');
 
         function actualizar() {
-            let suma = 0, n = 0;
-            checks.forEach(function (c) {
-                c.closest('.combo-card').classList.toggle('seleccionado', c.checked);
-                if (c.checked) { suma += parseFloat(c.dataset.precio) || 0; n++; }
-            });
-            if (total) total.textContent = suma.toLocaleString('es-AR', { maximumFractionDigits: 0 });
-            if (cant)  cant.textContent  = n;
-            if (btn)   btn.disabled      = (n === 0);
-        }
+        let suma = 0, n = 0;
+checks.forEach(function (c) {
+            c.closest('.combo-card').classList.toggle('seleccionado', c.checked);
+            if (c.checked) { suma += parseFloat(c.dataset.precio) || 0; n++; }
+        });
+        if (total) total.textContent = suma.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+        if (cant)  cant.textContent  = n;
+    if (btn)   btn.disabled      = (n === 0);
+}
 
         checks.forEach(function (c) { c.addEventListener('change', actualizar); });
         actualizar();
