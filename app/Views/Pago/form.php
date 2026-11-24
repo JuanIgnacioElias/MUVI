@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Nuevo Pago</title>
-    <!-- Usamos Bootstrap para que combine con el resto de tu plataforma de cine Muvi -->
     <link href="https://jsdelivr.net" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -18,12 +17,12 @@
                 <form action="<?= base_url('pago/guardarWeb') ?>" method="POST">
                     <?= csrf_field() ?>
                  
-                    <!-- MONTO AUTOMÁTICO: Bloqueado para que el usuario no tipee el precio libremente -->
+                    <!-- MONTO AUTOMÁTICO -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">Monto Total a Pagar:</label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
-                            <input type="number" id="monto_input" name="monto" class="form-control bg-white" readonly required>
+                            <input type="number" id="monto_input" name="monto" class="form-control bg-white" value="<?= round($resumen['total_general'] ?? 0) ?>" readonly required>
                         </div>
                         <small class="text-muted">Este valor se calcula sumando tus entradas y combos seleccionados.</small>
                     </div>
@@ -61,31 +60,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE SUMATORIA AUTOMÁTICA -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Lee el carrito guardado en el navegador (ajusta 'carritoCine' si usas otro nombre en tu LocalStorage)
-            const carrito = JSON.parse(localStorage.getItem('carritoCine')) || [];
-            const montoInput = document.getElementById('monto_input');
-            const btnConfirmar = document.getElementById('btn-confirmar');
-
-            let totalCalculado = 0;
-
-            // Multiplica el precio de cada entrada/combo por su cantidad seleccionada
-            carrito.forEach(item => {
-                totalCalculado += parseFloat(item.precio) * parseInt(item.cantidad);
-            });
-
-            // Inyecta el resultado redondeado a Entero (INT) requerido por tu base de datos
-            if (totalCalculado > 0) {
-                montoInput.value = Math.round(totalCalculado);
-            } else {
-                montoInput.value = 0;
-                btnConfirmar.disabled = true;
-                alert("Atención: El carrito de compras está vacío. Selecciona entradas o combos antes de proceder.");
-            }
-        });
-    </script>
 </body>
 </html>
+
 

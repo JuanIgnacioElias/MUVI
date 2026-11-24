@@ -96,8 +96,8 @@
                             </select>
                         </div>
 
-                        <!-- MÉTODO DE PAGO -->
-                        <div class="mb-4">
+                      <!-- MÉTODO DE PAGO -->
+                      <div class="mb-4">
                             <label class="form-label fw-bold text-secondary">Método de Pago:</label>
                             <select name="metodo_pago" class="form-select" required>
                                 <option value="">-- Selecciona una opción --</option>
@@ -112,7 +112,7 @@
 
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg" id="btn-confirmar"
-                                    <?= ($resumen['total_general'] <= 0) ? 'disabled' : '' ?>>
+                                    <?= (($resumen['total_general'] ?? 0) <= 0) ? 'disabled' : '' ?>>
                                 Confirmar Pago
                             </button>
                             <a href="<?= base_url('funcion') ?>" class="btn btn-link text-muted text-center mt-2">Volver a la Cartelera</a>
@@ -168,37 +168,5 @@
 
         <?php endif; ?>
     </div>
-
-    <!-- SCRIPT DE SUMATORIA AUTOMÁTICA -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const montoInput = document.getElementById('monto_input');
-            const btnConfirmar = document.getElementById('btn-confirmar');
-            
-            if (montoInput && btnConfirmar) {
-                const carrito = JSON.parse(localStorage.getItem('carritoCine')) || [];
-                let totalCalculado = 0;
-
-                carrito.forEach(item => {
-                    totalCalculado += parseFloat(item.precio) * parseInt(item.cantidad);
-                });
-
-                if (totalCalculado > 0) {
-                    montoInput.value = Math.round(totalCalculado);
-                } else {
-                    montoInput.value = 0;
-                    btnConfirmar.disabled = true;
-                }
-            }
-        });
-    </script>
-
-    <!-- Limpieza automática de la memoria del navegador tras guardar -->
-    <?php if (session()->getFlashdata('clear_cart')): ?>
-        <script>
-            localStorage.removeItem('carritoCine');
-            console.log("Transacción exitosa: Carrito vaciado de la memoria local.");
-        </script>
-    <?php endif; ?>
 
 <?= view('templates/footer') ?>
