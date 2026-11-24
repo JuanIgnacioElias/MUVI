@@ -44,37 +44,58 @@ class ComboController extends BaseController
         return redirect()->to(base_url('combos'))
             ->with('mensaje', 'Combo agregado correctamente.');
     }
-
-    // CLIENTE: recibe los combos marcados (checkbox) y los guarda en sesión
+    // CLIENTE: recibe las cantidades de cada combo y los guarda en sesión
     public function seleccionar()
     {
-        $ids = $this->request->getPost('combos');
+        $cantidadesPost = $this->request->getPost('cantidades');
 
-        if (empty($ids) || ! is_array($ids)) {
+        if (empty($cantidadesPost) || ! is_array($cantidadesPost)) {
             return redirect()->to(base_url('combos'))
                 ->with('errores', ['Seleccioná al menos un combo.']);
         }
 
-        $ids    = array_values(array_unique(array_map('intval', $ids)));
-        $combos = $this->comboModel->whereIn('id_combo', $ids)->findAll();
+        // Filtramos solo los combos con cantidad mayor a 0
+        $seleccionados = [];
+        foreach ($cantidadesPost as $id => $cant) {
+            $id   = (int) $id;
+            $cant = (int) $cant;
+            if ($id > 0 && $cant > 0) {
+                $seleccionados[$id] = $cant;
+            }
+        }
+
+        if (empty($seleccionados)) {
+            return redirect()->to(base_url('combos'))
+                ->with('errores', ['Seleccioná al menos un combo.']);
+        }
+
+        $combos = $this->comboModel->whereIn('id_combo', array_keys($seleccionados))->findAll();
 
         if (empty($combos)) {
             return redirect()->to(base_url('combos'))
                 ->with('errores', ['Los combos seleccionados no existen.']);
         }
 
-        // El total se calcula en el servidor, no se confía en el del navegador
-        $total = array_sum(array_column($combos, 'precio'));
+        // Calculamos el total multiplicando precio * cantidad en el servidor
+        $total = 0;
+        $totalUnidades = 0;
+        foreach ($combos as $combo) {
+            $id   = (int) $combo['id_combo'];
+            $cant = $seleccionados[$id] ?? 0;
+            $total += (float) $combo['precio'] * $cant;
+            $totalUnidades += $cant;
+        }
 
         session()->set([
-            'combos_seleccionados' => array_column($combos, 'id_combo'),
+            'combos_seleccionados' => $seleccionados, // Ej: [1 => 2, 3 => 1]
             'combos_total'         => $total,
         ]);
 
         return redirect()->to(base_url('pago'))
-            ->with('mensaje', 'Combos seleccionados: ' . count($combos));
+            ->with('mensaje', 'Combos seleccionados: ' . $totalUnidades);
     }
 
+    
     // ================= API (JSON) =================
 
     public function show($id = null)

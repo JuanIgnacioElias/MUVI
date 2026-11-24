@@ -42,9 +42,6 @@
                                 <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
                                     <div>
                                         <strong>🎟️ Entradas (x<?= $resumen['entradas_cant'] ?>)</strong>
-                                        <span class="badge <?= $resumen['entradas_es_4d'] ? 'bg-danger' : 'bg-secondary' ?> ms-1">
-                                            <?= $resumen['entradas_es_4d'] ? 'Sala 4D' : 'Estándar' ?>
-                                        </span>
                                         <div class="small text-muted">
                                             Butacas: <?= esc(implode(', ', $resumen['butacas'])) ?> ($<?= number_format($resumen['entrada_unit'], 0, ',', '.') ?> c/u)
                                         </div>
@@ -53,17 +50,18 @@
                                 </li>
                             <?php endif; ?>
 
-                            <!-- Combos -->
-                            <?php if (!empty($resumen['combos'])): ?>
+                        <!-- Combos -->
+                        <?php if (!empty($resumen['combos'])): ?>
                                 <?php foreach ($resumen['combos'] as $c): ?>
                                     <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
                                         <div>
-                                            <strong>🍿 Combo:</strong> <?= esc($c['comida']) ?> + <?= esc($c['bebida']) ?>
+                                            <strong>🍿 <?= (int) ($c['cantidad'] ?? 1) ?>x Combo:</strong> <?= esc($c['comida']) ?> + <?= esc($c['bebida']) ?>
                                         </div>
-                                        <span class="fw-bold">$<?= number_format($c['precio'], 0, ',', '.') ?></span>
+                                        <span class="fw-bold">$<?= number_format($c['subtotal'] ?? $c['precio'], 0, ',', '.') ?></span>
                                     </li>
                                 <?php endforeach; ?>
                             <?php endif; ?>
+
 
                             <?php if ($resumen['entradas_cant'] === 0 && empty($resumen['combos'])): ?>
                                 <li class="list-group-item bg-transparent text-muted text-center px-0">

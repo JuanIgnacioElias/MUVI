@@ -50,17 +50,26 @@ class Pago extends BaseController
         $entradasEs4D    = (bool) ($session->get('entradas_es_4d') ?? false);
         $entradasTotal   = (float) ($session->get('entradas_total') ?? 0);
 
-        // 3. Datos de los Combos elegidos
-        $combosDetalle = [];
-        $idsCombos = $session->get('combos_seleccionados') ?? [];
-        if (!empty($idsCombos)) {
-            $combosDetalle = $db->table('combo')
-                ->whereIn('id_combo', $idsCombos)
-                ->get()
-                ->getResultArray();
-        }
-        $combosTotal = (float) ($session->get('combos_total') ?? 0);
-
+                // 3. Datos de los Combos elegidos
+                $combosDetalle = [];
+                $combosSeleccionados = $session->get('combos_seleccionados') ?? [];
+                if (!empty($combosSeleccionados) && is_array($combosSeleccionados)) {
+                    $idsCombos = array_keys($combosSeleccionados);
+                    $combosDb = $db->table('combo')
+                        ->whereIn('id_combo', $idsCombos)
+                        ->get()
+                        ->getResultArray();
+        
+                    foreach ($combosDb as $c) {
+                        $id   = (int) $c['id_combo'];
+                        $cant = (int) ($combosSeleccionados[$id] ?? 1);
+                        $c['cantidad'] = $cant;
+                        $c['subtotal'] = (float) $c['precio'] * $cant;
+                        $combosDetalle[] = $c;
+                    }
+                }
+                $combosTotal = (float) ($session->get('combos_total') ?? 0);
+        
         // 4. Suma Total Final
         $totalGeneral = $entradasTotal + $combosTotal;
 
@@ -96,12 +105,18 @@ class Pago extends BaseController
      */
     public function guardarWeb()
     {
+        $metodoPago = $this->request->getPost('metodo_pago');
+
+        // Si paga en efectivo (boletería) queda Pendiente; si paga con tarjeta o MP queda Pagado
+        $estado = ($metodoPago === 'efectivo') ? 'Pendiente' : 'Pagado';
+
         $data = [
             'monto'       => $this->request->getPost('monto'),
             'moneda'      => $this->request->getPost('moneda'),
-            'metodo_pago' => $this->request->getPost('metodo_pago'),
-            'estado'      => $this->request->getPost('estado'),
+            'metodo_pago' => $metodoPago,
+            'estado'      => $estado,
         ];
+
 
         if ($this->pagoModel->insert($data)) {
             // Limpiamos el carrito de la sesión tras confirmar el pago

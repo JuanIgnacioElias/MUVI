@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="<?= base_url('assets/css/combo.css') ?>">
 <?php $esAdmin = strtoupper((string) session()->get('role')) === 'ADMINISTRADOR'; ?>
 
@@ -26,10 +25,8 @@
     <div class="combos-container">
         <?php if (!empty($combos) && is_array($combos)): ?>
             <?php foreach ($combos as $combo): ?>
-                <label class="combo-card">
-                    <input type="checkbox" name="combos[]" value="<?= (int) $combo['id_combo'] ?>"
-                           data-precio="<?= (float) $combo['precio'] ?>" class="combo-check">
-                    
+                <?php $idCombo = (int) $combo['id_combo']; ?>
+                <div class="combo-card">
                     <div class="combo-info">
                         <!-- Comida -->
                         <div class="combo-item">
@@ -46,7 +43,22 @@
                     <div class="combo-price">
                         $<?= number_format($combo['precio'], 0, ',', '.') ?>
                     </div>
-</label>
+
+                    <!-- Selector de Cantidad -->
+                    <div class="combo-cantidad" style="display: flex; align-items: center; gap: 6px; margin-top: 10px;">
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-menos">−</button>
+                        <input type="number" 
+                               name="cantidades[<?= $idCombo ?>]" 
+                               value="0" 
+                               min="0" 
+                               max="20"
+                               data-precio="<?= (float) $combo['precio'] ?>" 
+                               class="combo-qty form-control form-control-sm text-center" 
+                               style="width: 55px;" 
+                               readonly>
+                        <button type="button" class="btn btn-sm btn-outline-secondary btn-mas">+</button>
+                    </div>
+                </div>
             <?php endforeach; ?>
         <?php else: ?>
             <p class="no-combos">No hay combos disponibles en la base de datos.</p>
@@ -57,32 +69,53 @@
         <div class="combos-footer">
             <div class="combos-total">
                 Seleccionados: <span id="cant">0</span> &nbsp;|&nbsp; Total: <strong>$<span id="total">0</span></strong>
-            </div style="display: flex; gap: 10px;">
-            <a href="<?= base_url('combos/omitir') ?>" class="btn btn-outline-secondary">Continuar sin combos</a>
-            <button type="submit" id="btn-continuar" class="btn-continuar" disabled>Continuar</button>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <a href="<?= base_url('combos/omitir') ?>" class="btn btn-outline-secondary">Continuar sin combos</a>
+                <button type="submit" id="btn-continuar" class="btn-continuar" disabled>Continuar</button>
+            </div>
         </div>
     <?php endif; ?>
 </form>
 
 <script>
     (function () {
-        const checks = document.querySelectorAll('.combo-check');
-        const total  = document.getElementById('total');
-        const cant   = document.getElementById('cant');
-const btn    = document.getElementById('btn-continuar');
+        const cards = document.querySelectorAll('.combo-card');
+        const total = document.getElementById('total');
+        const cant  = document.getElementById('cant');
+        const btn   = document.getElementById('btn-continuar');
 
         function actualizar() {
-        let suma = 0, n = 0;
-checks.forEach(function (c) {
-            c.closest('.combo-card').classList.toggle('seleccionado', c.checked);
-            if (c.checked) { suma += parseFloat(c.dataset.precio) || 0; n++; }
-        });
-        if (total) total.textContent = suma.toLocaleString('es-AR', { maximumFractionDigits: 0 });
-        if (cant)  cant.textContent  = n;
-    if (btn)   btn.disabled      = (n === 0);
-}
+            let suma = 0, n = 0;
+            cards.forEach(function (card) {
+                const input = card.querySelector('.combo-qty');
+                const cantidad = parseInt(input.value) || 0;
+                const precio   = parseFloat(input.dataset.precio) || 0;
 
-        checks.forEach(function (c) { c.addEventListener('change', actualizar); });
+                card.classList.toggle('seleccionado', cantidad > 0);
+                if (cantidad > 0) {
+                    suma += precio * cantidad;
+                    n += cantidad;
+                }
+            });
+
+            if (total) total.textContent = suma.toLocaleString('es-AR', { maximumFractionDigits: 0 });
+            if (cant)  cant.textContent  = n;
+            if (btn)   btn.disabled      = (n === 0);
+        }
+
+        cards.forEach(function (card) {
+            const input = card.querySelector('.combo-qty');
+            card.querySelector('.btn-menos').addEventListener('click', function () {
+                let val = parseInt(input.value) || 0;
+                if (val > 0) { input.value = val - 1; actualizar(); }
+            });
+            card.querySelector('.btn-mas').addEventListener('click', function () {
+                let val = parseInt(input.value) || 0;
+                if (val < 20) { input.value = val + 1; actualizar(); }
+            });
+        });
+
         actualizar();
     })();
 </script>
