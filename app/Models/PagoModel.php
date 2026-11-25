@@ -9,7 +9,7 @@ class PagoModel extends Model
     protected $table            = 'pagos';
     protected $primaryKey       = 'id_pago';
     protected $returnType       = 'array';
-    protected $allowedFields    = ['monto', 'moneda', 'metodo_pago', 'estado'];
+    protected $allowedFields    = ['monto', 'moneda', 'metodo_pago', 'estado', 'id_usuario'];
     protected $useTimestamps    = true;
 
     protected $validationRules = [
@@ -17,6 +17,7 @@ class PagoModel extends Model
         'moneda'      => 'required|alpha_space|max_length[20]', // Cambiado a texto con longitud máxima
         'metodo_pago' => 'required|max_length[20]', // Se añadió [20]
         'estado'      => 'required|max_length[20]', // Se añadió [20]
+        'id_usuario'  => 'permit_empty|is_natural_no_zero',
     ];
 
     protected $validationMessages = [

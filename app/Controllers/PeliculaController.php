@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Models\CategoriaModel;
 use App\Models\PeliculaModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Exceptions\PageNotFoundException;
@@ -23,40 +22,38 @@ class PeliculaController extends BaseController
     private const CARPETA_IMAGENES = 'uploads/peliculas';
 
     protected $peliculaModel;
-    protected $categoriaModel;
 
     public function __construct()
     {
-        $this->peliculaModel  = new PeliculaModel();
-        $this->categoriaModel = new CategoriaModel();
+        $this->peliculaModel = new PeliculaModel();
     }
 
     // ================= VISTAS WEB: CLIENTES =================
 
-    // Catálogo de películas (público). Permite filtrar por categoría: ?categoria=ID
+    // Catálogo de películas (público), separado en "En estreno" y "Próximamente".
     public function catalogo()
     {
-        $idCategoria = (int) $this->request->getGet('categoria');
+        $peliculas = $this->peliculaModel->orderBy('titulo')->findAll();
 
-        $consulta = $this->peliculaModel->conCategoria();
-        if ($idCategoria > 0) {
-            $consulta->where('peliculas.id_categoria', $idCategoria);
-        }
+        $proximamente = array_values(array_filter(
+            $peliculas,
+            static fn (array $p): bool => ($p['estado'] ?? '') === PeliculaModel::PROXIMAMENTE
+        ));
+        $enEstreno = array_values(array_filter(
+            $peliculas,
+            static fn (array $p): bool => ($p['estado'] ?? '') !== PeliculaModel::PROXIMAMENTE
+        ));
 
         return view('peliculas/catalogo', [
-            'peliculas'       => $consulta->orderBy('peliculas.titulo')->findAll(),
-            'categorias'      => $this->categoriaModel->orderBy('nombre')->findAll(),
-            'categoriaActiva' => $idCategoria,
+            'enEstreno'    => $enEstreno,
+            'proximamente' => $proximamente,
         ]);
     }
 
     // Detalle de una película + las funciones que tiene programadas (público).
     public function detalle($id = null)
     {
-        $pelicula = $this->peliculaModel
-            ->conCategoria()
-            ->where('peliculas.id_pelicula', (int) $id)
-            ->first();
+        $pelicula = $this->peliculaModel->find((int) $id);
 
         if (! $pelicula) {
             throw PageNotFoundException::forPageNotFound('La película solicitada no existe.');
@@ -91,16 +88,13 @@ class PeliculaController extends BaseController
     public function administrar()
     {
         return view('peliculas/administrar', [
-            'peliculas' => $this->peliculaModel->conCategoria()->orderBy('peliculas.titulo')->findAll(),
+            'peliculas' => $this->peliculaModel->orderBy('titulo')->findAll(),
         ]);
     }
 
     public function nueva()
     {
-        return view('peliculas/form', [
-            'pelicula'   => null,
-            'categorias' => $this->categoriaModel->orderBy('nombre')->findAll(),
-        ]);
+        return view('peliculas/form', ['pelicula' => null]);
     }
 
     public function guardar()
@@ -117,10 +111,7 @@ class PeliculaController extends BaseController
                              ->with('error', 'La película solicitada no existe.');
         }
 
-        return view('peliculas/form', [
-            'pelicula'   => $pelicula,
-            'categorias' => $this->categoriaModel->orderBy('nombre')->findAll(),
-        ]);
+        return view('peliculas/form', ['pelicula' => $pelicula]);
     }
 
     public function actualizar($id = null)
@@ -146,10 +137,9 @@ class PeliculaController extends BaseController
     }
 
     /**
-     * Alta ($id = null) o edición de una película, con su imagen y categoría.
-     *
-     * Todo ocurre en una transacción: si algo falla, no queda ni la categoría
-     * nueva ni la película a medias, y se borra el archivo recién subido.
+     * Alta ($id = null) o edición de una película, con su imagen, categoría
+     * (texto libre) y estado (en estreno / próximamente).
+     * Si algo falla, se borra el archivo recién subido para no dejar basura.
      */
     private function persistir(?int $id)
     {
@@ -169,33 +159,16 @@ class PeliculaController extends BaseController
             'sinopsis'      => $texto($this->request->getPost('sinopsis')),
             'duracion'      => trim((string) $this->request->getPost('duracion')),
             'clasificacion' => trim((string) $this->request->getPost('clasificacion')),
+            'categoria'     => $texto($this->request->getPost('categoria')),
+            'estado'        => strtoupper(trim((string) $this->request->getPost('estado'))) ?: PeliculaModel::ESTRENO,
             'trailer_url'   => $texto($this->request->getPost('trailer_url')),
         ];
 
-        $errores    = [];
-        $rutaNueva  = null;
-        $idCategoria = (int) $this->request->getPost('id_categoria') ?: null;
-        $nuevaCategoria = trim((string) $this->request->getPost('nueva_categoria'));
-
-        $db = db_connect();
-        $db->transBegin();
+        $errores   = [];
+        $rutaNueva = null;
 
         try {
-            // 1) Categoría: una existente o una nueva escrita por el administrador.
-            if ($nuevaCategoria !== '') {
-                $categoria = $this->categoriaModel->where('nombre', $nuevaCategoria)->first();
-
-                if ($categoria) {
-                    $idCategoria = (int) $categoria['id_categoria'];
-                } elseif ($this->categoriaModel->insert(['nombre' => $nuevaCategoria])) {
-                    $idCategoria = (int) $this->categoriaModel->getInsertID();
-                } else {
-                    $errores = array_merge($errores, array_values($this->categoriaModel->errors()));
-                }
-            }
-            $datos['id_categoria'] = $idCategoria;
-
-            // 2) Imagen (opcional): se valida y se guarda en /public/uploads/peliculas.
+            // Imagen (opcional): se valida y se guarda en /public/uploads/peliculas.
             $archivo = $this->request->getFile('imagen');
             if ($archivo !== null && $archivo->getError() !== UPLOAD_ERR_NO_FILE) {
                 $valida = $this->validate([
@@ -210,21 +183,20 @@ class PeliculaController extends BaseController
                 ]);
 
                 if (! $valida) {
-                    $errores = array_merge($errores, array_values($this->validator->getErrors()));
+                    $errores = array_values($this->validator->getErrors());
                 } else {
                     $rutaNueva = $this->moverImagen($archivo);
                     $datos['imagen'] = $rutaNueva;
                 }
             }
 
-            // 3) Película
             if (empty($errores)) {
                 $ok = $id === null
                     ? $this->peliculaModel->insert($datos)
                     : $this->peliculaModel->update($id, $datos);
 
                 if (! $ok) {
-                    $errores = array_merge($errores, array_values($this->peliculaModel->errors()));
+                    $errores = array_values($this->peliculaModel->errors());
                 }
             }
         } catch (\Throwable $e) {
@@ -232,15 +204,11 @@ class PeliculaController extends BaseController
             $errores[] = 'Ocurrió un error al guardar la película. Intentá de nuevo.';
         }
 
-        if (! empty($errores) || ! $db->transStatus()) {
-            $db->transRollback();
+        if (! empty($errores)) {
             $this->borrarImagen($rutaNueva);
 
-            return redirect()->back()->withInput()
-                             ->with('errors', $errores ?: ['No se pudo guardar la película.']);
+            return redirect()->back()->withInput()->with('errors', $errores);
         }
-
-        $db->transCommit();
 
         // Si se reemplazó el póster, el anterior ya no se usa.
         if ($existente && $rutaNueva !== null) {
@@ -302,6 +270,8 @@ class PeliculaController extends BaseController
             'sinopsis'      => $this->request->getVar('sinopsis'),
             'duracion'      => $this->request->getVar('duracion'),
             'clasificacion' => $this->request->getVar('clasificacion'),
+            'categoria'     => $this->request->getVar('categoria'),
+            'estado'        => $this->request->getVar('estado') ?? PeliculaModel::ESTRENO,
             'trailer_url'   => $this->request->getVar('trailer_url'),
         ];
 
@@ -330,6 +300,8 @@ class PeliculaController extends BaseController
             'sinopsis'      => $this->request->getVar('sinopsis'),
             'duracion'      => $this->request->getVar('duracion'),
             'clasificacion' => $this->request->getVar('clasificacion'),
+            'categoria'     => $this->request->getVar('categoria'),
+            'estado'        => $this->request->getVar('estado'),
             'trailer_url'   => $this->request->getVar('trailer_url'),
         ];
 

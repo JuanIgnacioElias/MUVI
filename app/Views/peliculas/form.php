@@ -3,7 +3,6 @@
  * Formulario de alta y edición de películas (solo ADMINISTRADOR).
  *
  * @var array|null $pelicula    null = nueva, array = edición
- * @var array      $categorias  [id_categoria, nombre]
  */
 $esEdicion = ! empty($pelicula);
 $accion    = $esEdicion
@@ -62,22 +61,21 @@ $valor = static fn (string $campo): string => (string) (old($campo, null, false)
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="id_categoria" class="form-label">Categoría</label>
-                            <select id="id_categoria" name="id_categoria" class="form-select">
-                                <option value="">Sin categoría</option>
-                                <?php foreach ($categorias as $categoria): ?>
-                                    <option value="<?= (int) $categoria['id_categoria'] ?>"
-                                        <?= (string) $valor('id_categoria') === (string) $categoria['id_categoria'] ? 'selected' : '' ?>>
-                                        <?= esc($categoria['nombre']) ?>
+                            <label for="categoria" class="form-label">Categoría</label>
+                            <input type="text" id="categoria" name="categoria" class="form-control" maxlength="40"
+                                   placeholder="Ej.: Acción, Comedia, Terror"
+                                   value="<?= esc($valor('categoria'), 'attr') ?>">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <?php $estadoActual = $valor('estado') ?: \App\Models\PeliculaModel::ESTRENO; ?>
+                            <select id="estado" name="estado" class="form-select" required>
+                                <?php foreach (\App\Models\PeliculaModel::ESTADOS as $clave => $texto): ?>
+                                    <option value="<?= esc($clave, 'attr') ?>" <?= $estadoActual === $clave ? 'selected' : '' ?>>
+                                        <?= esc($texto) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="nueva_categoria" class="form-label">…o crear una nueva</label>
-                            <input type="text" id="nueva_categoria" name="nueva_categoria" class="form-control" maxlength="40"
-                                   placeholder="Si la completás, se usa en vez de la lista"
-                                   value="<?= esc((string) old('nueva_categoria', '', false), 'attr') ?>">
                         </div>
                     </div>
 

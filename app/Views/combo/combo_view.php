@@ -27,15 +27,20 @@
             <?php foreach ($combos as $combo): ?>
                 <?php $idCombo = (int) $combo['id_combo']; ?>
                 <div class="combo-card">
+                    <?php if (! empty($combo['imagen'])): ?>
+                        <img src="<?= esc(base_url($combo['imagen']), 'attr') ?>"
+                             alt="Imagen del combo" class="combo-foto">
+                    <?php endif; ?>
+
                     <div class="combo-info">
-                        <!-- Comida -->
+                        <!-- Comida --> 
                         <div class="combo-item">
-                            <p>🍿 <?= esc($combo['comida']) ?></p>
+                            <p> <?= esc($combo['comida']) ?></p>
                         </div>
 
                         <!-- Bebida -->
                         <div class="combo-item">
-                            <p>🥤 <?= esc($combo['bebida']) ?></p>
+                            <p> <?= esc($combo['bebida']) ?></p>
                         </div>
                     </div>
 

@@ -6,7 +6,17 @@ class AdminController extends BaseController
     // Muestra el dashboard principal del administrador
     public function index()
     {
-        return view('admin/dashboard');
+        // Pagos almacenados, del más nuevo al más viejo, con el usuario que los hizo.
+        // (Los pagos anteriores a esta función no tienen usuario asociado.)
+        $pagos = db_connect()->table('pagos')
+            ->select('pagos.*, users.name AS usuario_nombre, users.last_name AS usuario_apellido, users.email AS usuario_email')
+            ->join('users', 'users.id = pagos.id_usuario', 'left')
+            ->orderBy('pagos.created_at', 'DESC')
+            ->orderBy('pagos.id_pago', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        return view('admin/dashboard', ['pagos' => $pagos]);
     }
 
     // Lista todos los usuarios registrados

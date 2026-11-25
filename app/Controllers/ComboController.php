@@ -4,10 +4,14 @@ namespace App\Controllers;
 
 use App\Models\ComboModel;
 use CodeIgniter\API\ResponseTrait;
+use CodeIgniter\HTTP\Files\UploadedFile;
 
 class ComboController extends BaseController
 {
     use ResponseTrait;
+
+    /** Carpeta (dentro de /public) donde se guardan las imágenes de los combos. */
+    private const CARPETA_IMAGENES = 'uploads/combos';
 
     protected $comboModel;
 
@@ -31,12 +35,37 @@ class ComboController extends BaseController
         return view('combo/form');
     }
 
-    // ADMIN: recibe el formulario y guarda el combo
+    // ADMIN: recibe el formulario y guarda el combo (con imagen opcional)
     public function guardar()
     {
-        $data = $this->request->getPost(['comida', 'bebida', 'precio']);
+        $data      = $this->request->getPost(['comida', 'bebida', 'precio']);
+        $rutaNueva = null;
+
+        $archivo = $this->request->getFile('imagen');
+        if ($archivo !== null && $archivo->getError() !== UPLOAD_ERR_NO_FILE) {
+            $valida = $this->validate([
+                'imagen' => 'uploaded[imagen]|is_image[imagen]|mime_in[imagen,image/jpeg,image/png,image/webp]|max_size[imagen,2048]',
+            ], [
+                'imagen' => [
+                    'uploaded' => 'No se pudo subir la imagen. Probá con otro archivo.',
+                    'is_image' => 'El archivo elegido no es una imagen.',
+                    'mime_in'  => 'La imagen debe ser JPG, PNG o WEBP.',
+                    'max_size' => 'La imagen no puede pesar más de 2 MB.',
+                ],
+            ]);
+
+            if (! $valida) {
+                return redirect()->back()->withInput()
+                    ->with('errores', array_values($this->validator->getErrors()));
+            }
+
+            $rutaNueva      = $this->moverImagen($archivo);
+            $data['imagen'] = $rutaNueva;
+        }
 
         if (! $this->comboModel->insert($data)) {
+            $this->borrarImagen($rutaNueva);
+
             return redirect()->back()->withInput()
                 ->with('errores', $this->comboModel->errors());
         }
@@ -44,6 +73,29 @@ class ComboController extends BaseController
         return redirect()->to(base_url('combos'))
             ->with('mensaje', 'Combo agregado correctamente.');
     }
+
+    /** Guarda la imagen con un nombre aleatorio y devuelve su ruta relativa a /public. */
+    private function moverImagen(UploadedFile $archivo): string
+    {
+        $nombre = $archivo->getRandomName();
+        $archivo->move(FCPATH . self::CARPETA_IMAGENES, $nombre);
+
+        return self::CARPETA_IMAGENES . '/' . $nombre;
+    }
+
+    /** Borra una imagen subida. Nunca toca archivos fuera de uploads/combos. */
+    private function borrarImagen(?string $ruta): void
+    {
+        if ($ruta === null || strpos($ruta, self::CARPETA_IMAGENES . '/') !== 0 || strpos($ruta, '..') !== false) {
+            return;
+        }
+
+        $archivo = FCPATH . $ruta;
+        if (is_file($archivo)) {
+            @unlink($archivo);
+        }
+    }
+
     // CLIENTE: recibe las cantidades de cada combo y los guarda en sesión
     public function seleccionar()
     {
@@ -160,11 +212,13 @@ class ComboController extends BaseController
     //ELIMINAR UN COMBO
     public function delete($id = null)
     {
-        if (!$this->comboModel->find($id)) {
+        $combo = $this->comboModel->find($id);
+        if (!$combo) {
             return $this->failNotFound('El combo no existe.');
         }
 
         $this->comboModel->delete($id);
+        $this->borrarImagen($combo['imagen'] ?? null);
 
         return $this->respond([
             'status'  => 200,

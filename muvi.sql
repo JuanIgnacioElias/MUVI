@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 16-11-2026 a las 23:09:29
+-- Tiempo de generación: 25-11-2026 a las 21:30:11
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -63,6 +63,7 @@ CREATE TABLE `combo` (
   `comida` varchar(20) NOT NULL,
   `bebida` varchar(20) NOT NULL,
   `precio` decimal(10,2) NOT NULL,
+  `imagen` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -71,12 +72,14 @@ CREATE TABLE `combo` (
 -- Volcado de datos para la tabla `combo`
 --
 
-INSERT INTO `combo` (`id_combo`, `comida`, `bebida`, `precio`, `created_at`, `updated_at`) VALUES
-(1, 'pochoclos', 'gaseosa_lata', 7000.00, NULL, NULL),
-(2, 'pochoclos', 'gaseosa botella 2L', 10000.00, NULL, NULL),
-(3, 'hamburguesa', 'gaseosa botella 2L', 9000.00, NULL, NULL),
-(4, 'Pancho', 'Gaseosa Lata', 9000.00, NULL, NULL),
-(5, 'Pancho', 'Gaseosa Botella 2L', 9000.00, '2026-11-11 20:21:36', '2026-11-11 20:21:36');
+INSERT INTO `combo` (`id_combo`, `comida`, `bebida`, `precio`, `imagen`, `created_at`, `updated_at`) VALUES
+(1, 'pochoclos', 'gaseosa_lata', 7000.00, NULL, NULL, NULL),
+(2, 'pochoclos', 'gaseosa botella 2L', 10000.00, NULL, NULL, NULL),
+(3, 'hamburguesa', 'gaseosa botella 2L', 9000.00, NULL, NULL, NULL),
+(4, 'Pancho', 'Gaseosa Lata', 9000.00, NULL, NULL, NULL),
+(5, 'Pancho', 'Gaseosa Botella 2L', 9000.00, NULL, '2026-11-11 20:21:36', '2026-11-11 20:21:36'),
+(6, 'Hamburguesa Doble', 'Sprite', 6000.00, NULL, '2026-11-17 22:06:32', '2026-11-17 22:06:32'),
+(7, 'Hamburguesa Doble', 'Sprite', 6000.00, 'uploads/combos/1795635611_522e8ddcadae44b4ed41.png', '2026-11-25 19:40:11', '2026-11-25 19:40:11');
 
 -- --------------------------------------------------------
 
@@ -141,7 +144,7 @@ CREATE TABLE `funciones` (
 --
 
 INSERT INTO `funciones` (`id_funcion`, `fecha`, `hora_ingreso`, `hora_salida`, `id_sala`, `id_pelicula`, `created_at`, `updated_at`) VALUES
-(1, '2026-11-03', '20:30:00', '22:30:00', 1, 1, NULL, NULL),
+(1, '2026-11-30', '20:30:00', '22:30:00', 1, 1, NULL, '2026-11-24 21:41:12'),
 (2, '2026-12-02', '22:00:00', '00:00:00', 1, 1, '2026-11-11 19:40:52', '2026-11-11 19:40:52');
 
 -- --------------------------------------------------------
@@ -174,7 +177,12 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 (59, '2026-10-09-175145', 'App\\Database\\Migrations\\CreateCombo', 'default', 'App', 1793399262, 1),
 (60, '2026-10-09-175854', 'App\\Database\\Migrations\\CreateButaca', 'default', 'App', 1793399830, 2),
 (61, '2026-10-10-130000', 'App\\Database\\Migrations\\CreateComboCompra', 'default', 'App', 1793399830, 2),
-(62, '2026-10-16-224800', 'App\\Database\\Migrations\\CreateCompraButaca', 'default', 'App', 1793399831, 2);
+(62, '2026-10-16-224800', 'App\\Database\\Migrations\\CreateCompraButaca', 'default', 'App', 1793399831, 2),
+(63, '2026-11-24-100000', 'App\\Database\\Migrations\\CreateCategorias', 'default', 'App', 1795554187, 3),
+(64, '2026-11-24-100100', 'App\\Database\\Migrations\\AddImagenCategoriaToPeliculas', 'default', 'App', 1795554187, 3),
+(65, '2026-11-25-100000', 'App\\Database\\Migrations\\PeliculasCategoriaTextoYEstado', 'default', 'App', 1795635498, 4),
+(66, '2026-11-25-100100', 'App\\Database\\Migrations\\AddImagenToCombo', 'default', 'App', 1795635498, 4),
+(67, '2026-11-25-100200', 'App\\Database\\Migrations\\AddIdUsuarioToPagos', 'default', 'App', 1795635498, 4);
 
 -- --------------------------------------------------------
 
@@ -188,6 +196,7 @@ CREATE TABLE `pagos` (
   `moneda` varchar(20) NOT NULL,
   `metodo_pago` varchar(20) NOT NULL,
   `estado` varchar(20) NOT NULL,
+  `id_usuario` int(10) UNSIGNED DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -196,8 +205,11 @@ CREATE TABLE `pagos` (
 -- Volcado de datos para la tabla `pagos`
 --
 
-INSERT INTO `pagos` (`id_pago`, `monto`, `moneda`, `metodo_pago`, `estado`, `created_at`, `updated_at`) VALUES
-(1, 500, 'Robux', 'yellow card', 'Pendiente', '2026-11-03 22:10:15', '2026-11-03 22:10:15');
+INSERT INTO `pagos` (`id_pago`, `monto`, `moneda`, `metodo_pago`, `estado`, `id_usuario`, `created_at`, `updated_at`) VALUES
+(1, 500, 'Robux', 'yellow card', 'Pendiente', NULL, '2026-11-03 22:10:15', '2026-11-03 22:10:15'),
+(2, 21000, 'ars', 'tarjeta', 'Pagado', NULL, '2026-11-24 23:17:12', '2026-11-24 23:17:12'),
+(3, 14000, 'ars', 'efectivo', 'Pendiente', 2, '2026-11-25 19:42:46', '2026-11-25 19:42:46'),
+(4, 10000, 'ars', 'tarjeta', 'Pagado', 2, '2026-11-25 20:20:33', '2026-11-25 20:20:33');
 
 -- --------------------------------------------------------
 
@@ -211,7 +223,10 @@ CREATE TABLE `peliculas` (
   `sinopsis` text DEFAULT NULL,
   `duracion` int(10) UNSIGNED NOT NULL,
   `clasificacion` varchar(40) NOT NULL,
+  `categoria` varchar(40) DEFAULT NULL,
+  `estado` varchar(20) NOT NULL DEFAULT 'ESTRENO',
   `trailer_url` text DEFAULT NULL,
+  `imagen` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -220,8 +235,10 @@ CREATE TABLE `peliculas` (
 -- Volcado de datos para la tabla `peliculas`
 --
 
-INSERT INTO `peliculas` (`id_pelicula`, `titulo`, `sinopsis`, `duracion`, `clasificacion`, `trailer_url`, `created_at`, `updated_at`) VALUES
-(1, 'Jumanji', 'La película Jumanji (1995) trata sobre Alan Parrish, un niño que en 1969 descubre un misterioso juego 		de mesa y es mágicamente absorbido por su jungla interior tras tirar los dados.', 120, 'Aventura', 'https://www.youtube.com/watch?v=KcgsDnt3CIw', NULL, NULL);
+INSERT INTO `peliculas` (`id_pelicula`, `titulo`, `sinopsis`, `duracion`, `clasificacion`, `categoria`, `estado`, `trailer_url`, `imagen`, `created_at`, `updated_at`) VALUES
+(1, 'Jumanji', 'La película Jumanji (1995) trata sobre Alan Parrish, un niño que en 1969 descubre un misterioso juego 		de mesa y es mágicamente absorbido por su jungla interior tras tirar los dados.', 120, 'ATP', 'Aventura', 'ESTRENO', 'https://www.youtube.com/watch?v=KcgsDnt3CIw', 'uploads/peliculas/1795555491_f81dcf501201b6e65631.png', NULL, '2026-11-24 21:51:06'),
+(2, 'A Minecraft Movie', 'Una película de Minecraft sigue a cuatro inadaptados que son absorbidos por un portal misterioso hacia el Overworld, un mundo cúbico donde deben usar su creatividad y aliarse con Steve para sobrevivir y volver a casa', 101, 'ATP', 'Comedia', 'ESTRENO', 'https://www.youtube.com/watch?v=wJO_vIDZn-I', 'uploads/peliculas/1795565974_4acbd8cb74e2190bda0e.png', '2026-11-25 00:19:34', '2026-11-25 00:19:34'),
+(3, 'Coyote VS. ACME', 'Coyote vs. Acme (2026) trata sobre Wile E. Coyote, quien decide demandar a la corporación ACME tras años de sufrir explosiones, caídas y accidentes por sus productos defectuosos al intentar atrapar al Correcaminos', 103, 'ATP', 'Comedia', 'ESTRENO', 'https://www.youtube.com/watch?v=Yj-Nm47IW9k', 'uploads/peliculas/1795566075_0073eec22a80c458e0d9.png', '2026-11-25 00:21:15', '2026-11-25 00:21:26');
 
 -- --------------------------------------------------------
 
@@ -327,7 +344,8 @@ ALTER TABLE `migrations`
 -- Indices de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  ADD PRIMARY KEY (`id_pago`);
+  ADD PRIMARY KEY (`id_pago`),
+  ADD KEY `fk_pagos_usuario` (`id_usuario`);
 
 --
 -- Indices de la tabla `peliculas`
@@ -363,7 +381,7 @@ ALTER TABLE `butacas`
 -- AUTO_INCREMENT de la tabla `combo`
 --
 ALTER TABLE `combo`
-  MODIFY `id_combo` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_combo` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `compras`
@@ -387,19 +405,19 @@ ALTER TABLE `funciones`
 -- AUTO_INCREMENT de la tabla `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id_pago` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pago` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `peliculas`
 --
 ALTER TABLE `peliculas`
-  MODIFY `id_pelicula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_pelicula` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `salas`
@@ -443,6 +461,12 @@ ALTER TABLE `compra_butaca`
 ALTER TABLE `funciones`
   ADD CONSTRAINT `funciones_id_pelicula_foreign` FOREIGN KEY (`id_pelicula`) REFERENCES `peliculas` (`id_pelicula`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `funciones_id_sala_foreign` FOREIGN KEY (`id_sala`) REFERENCES `salas` (`id_sala`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Filtros para la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  ADD CONSTRAINT `fk_pagos_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

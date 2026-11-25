@@ -28,6 +28,7 @@
                     <th>Título</th>
                     <th>Categoría</th>
                     <th>Clasificación</th>
+                    <th>Estado</th>
                     <th>Duración</th>
                     <th class="text-center">Acciones</th>
                 </tr>
@@ -51,6 +52,13 @@
                         </td>
                         <td><?= esc($pelicula['categoria'] ?? '—') ?></td>
                         <td><?= esc($pelicula['clasificacion']) ?></td>
+                        <td>
+                            <?php if (($pelicula['estado'] ?? '') === \App\Models\PeliculaModel::PROXIMAMENTE): ?>
+                                <span class="badge text-bg-warning">Próximamente</span>
+                            <?php else: ?>
+                                <span class="badge text-bg-success">En estreno</span>
+                            <?php endif; ?>
+                        </td>
                         <td><?= (int) $pelicula['duracion'] ?> min</td>
                         <td class="text-center">
                             <a href="<?= site_url('admin/peliculas/editar/' . (int) $pelicula['id_pelicula']) ?>"
@@ -67,7 +75,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="6" class="text-center text-muted py-4">Todavía no hay películas cargadas.</td>
+                    <td colspan="7" class="text-center text-muted py-4">Todavía no hay películas cargadas.</td>
                 </tr>
             <?php endif; ?>
             </tbody>

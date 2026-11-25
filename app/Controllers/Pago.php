@@ -115,6 +115,8 @@ class Pago extends BaseController
             'moneda'      => $this->request->getPost('moneda'),
             'metodo_pago' => $metodoPago,
             'estado'      => $estado,
+            // Usuario que hizo el pago (el de la sesión), para que el admin lo vea en el dashboard
+            'id_usuario'  => (int) session()->get('id') ?: null,
         ];
 
 

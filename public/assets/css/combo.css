@@ -18,3 +18,4 @@
     .combos-total { font-size: 1.3rem; }
     .btn-continuar { background: #b11e1e; color: white; border: 0; padding: 10px 28px; font-size: 1.1rem; font-weight: bold; border-radius: 4px; cursor: pointer; }
     .btn-continuar:disabled { background: #444; color: #999; cursor: not-allowed; }
+    .combo-foto { width: 90px; height: 90px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }

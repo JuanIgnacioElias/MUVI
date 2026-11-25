@@ -11,7 +11,7 @@
         </div>
     <?php endif; ?>
 
-    <form action="<?= base_url('combos/guardar') ?>" method="post" class="card card-body shadow-sm">
+    <form action="<?= base_url('combos/guardar') ?>" method="post" enctype="multipart/form-data" class="card card-body shadow-sm">
         <?= csrf_field() ?>
 
         <div class="mb-3">
@@ -30,6 +30,12 @@
             <label for="precio" class="form-label">Precio</label>
             <input type="number" id="precio" name="precio" class="form-control"
                    min="0" step="0.01" value="<?= esc(old('precio')) ?>" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="imagen" class="form-label">Imagen (opcional · JPG, PNG o WEBP, máx. 2 MB)</label>
+            <input type="file" id="imagen" name="imagen" class="form-control"
+                   accept="image/jpeg,image/png,image/webp">
         </div>
 
         <div class="d-flex gap-2">

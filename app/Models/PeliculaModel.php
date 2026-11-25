@@ -6,12 +6,21 @@ use CodeIgniter\Model;
 
 class PeliculaModel extends Model
 {
+    public const ESTRENO      = 'ESTRENO';
+    public const PROXIMAMENTE = 'PROXIMAMENTE';
+
+    /** Valor guardado => texto que se muestra. */
+    public const ESTADOS = [
+        self::ESTRENO      => 'En estreno',
+        self::PROXIMAMENTE => 'Próximamente',
+    ];
+
     protected $table            = 'peliculas';
     protected $primaryKey       = 'id_pelicula';
     protected $returnType       = 'array';
     protected $allowedFields    = [
         'titulo', 'sinopsis', 'duracion', 'clasificacion',
-        'trailer_url', 'imagen', 'id_categoria',
+        'trailer_url', 'imagen', 'categoria', 'estado',
     ];
     protected $useTimestamps    = true;
 
@@ -22,7 +31,8 @@ class PeliculaModel extends Model
         'clasificacion' => 'required|max_length[40]',
         'trailer_url'   => 'permit_empty|valid_url',
         'imagen'        => 'permit_empty|max_length[255]',
-        'id_categoria'  => 'permit_empty|is_natural_no_zero|is_not_unique[categorias.id_categoria]',
+        'categoria'     => 'permit_empty|max_length[40]',
+        'estado'        => 'required|in_list[ESTRENO,PROXIMAMENTE]',
     ];
 
     protected $validationMessages = [
@@ -30,19 +40,10 @@ class PeliculaModel extends Model
         'duracion'      => ['is_natural_no_zero' => 'La duración debe ser un número de minutos válido.'],
         'clasificacion' => ['max_length' => 'La clasificación no puede superar los 40 caracteres.'],
         'trailer_url'   => ['valid_url' => 'Debe ingresar una URL válida para el tráiler.'],
-        'id_categoria'  => [
-            'is_natural_no_zero' => 'La categoría elegida no es válida.',
-            'is_not_unique'      => 'La categoría elegida no existe.',
+        'categoria'     => ['max_length' => 'La categoría no puede superar los 40 caracteres.'],
+        'estado'        => [
+            'required' => 'Indicá si la película está en estreno o próximamente.',
+            'in_list'  => 'El estado debe ser "En estreno" o "Próximamente".',
         ],
     ];
-
-    /**
-     * Devuelve el modelo con la categoría ya unida (columna "categoria").
-     * Se encadena: $modelo->conCategoria()->where(...)->findAll().
-     */
-    public function conCategoria(): static
-    {
-        return $this->select('peliculas.*, categorias.nombre AS categoria')
-                    ->join('categorias', 'categorias.id_categoria = peliculas.id_categoria', 'left');
-    }
 }

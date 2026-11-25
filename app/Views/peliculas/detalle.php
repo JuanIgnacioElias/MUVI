@@ -2,7 +2,7 @@
 /**
  * Detalle de una película y sus funciones programadas.
  *
- * @var array $pelicula           película con la columna "categoria"
+ * @var array $pelicula           película (incluye categoria y estado)
  * @var array $funcionesPorFecha  ['YYYY-MM-DD' => [funcion, ...]] (desde hoy)
  */
 $rol        = strtoupper((string) session()->get('role'));
@@ -33,9 +33,13 @@ $dias       = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 
         <h1 class="mb-3"><?= esc($pelicula['titulo']) ?></h1>
 
         <div class="d-flex flex-wrap gap-2 mb-3">
+            <?php if (($pelicula['estado'] ?? '') === \App\Models\PeliculaModel::PROXIMAMENTE): ?>
+                <span class="badge text-bg-warning">Próximamente</span>
+            <?php else: ?>
+                <span class="badge text-bg-success">En estreno</span>
+            <?php endif; ?>
             <?php if (! empty($pelicula['categoria'])): ?>
-                <a href="<?= site_url('peliculas') . '?categoria=' . (int) $pelicula['id_categoria'] ?>"
-                   class="badge text-bg-dark text-decoration-none"><?= esc($pelicula['categoria']) ?></a>
+                <span class="badge text-bg-dark"><?= esc($pelicula['categoria']) ?></span>
             <?php endif; ?>
             <span class="badge text-bg-secondary">Clasificación: <?= esc($pelicula['clasificacion']) ?></span>
             <span class="badge text-bg-secondary"><?= (int) $pelicula['duracion'] ?> min</span>
