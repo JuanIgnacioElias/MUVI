@@ -20,105 +20,49 @@ class Pago extends BaseController
     // VISTAS WEB (Control de flujo e Interfaz del Navegador)
     // =========================================================================
 
-    /**
-     * Muestra la vista principal. 
-     * Con la inversión de flujos, esta ruta carga el Formulario de Pago para Clientes.
-     * Si se pasa el parámetro ?admin=true en la URL, renderiza la tabla de auditoría.
-     */
     public function index()
     {
-        $db = db_connect();
         $session = session();
 
-        // 1. Datos de la Función, Película y Sala
-        $funcionDetalle = null;
-        $idFuncion = $session->get('id_funcion');
-        if ($idFuncion) {
-            $funcionDetalle = $db->table('funciones f')
-                ->select('f.*, p.titulo AS pelicula_titulo, s.nombre AS sala_nombre, s.tipo_sala')
-                ->join('peliculas p', 'p.id_pelicula = f.id_pelicula', 'left')
-                ->join('salas s', 's.id_sala = f.id_sala', 'left')
-                ->where('f.id_funcion', $idFuncion)
-                ->get()
-                ->getRowArray();
-        }
-
-        // 2. Datos de las Entradas / Butacas
-        $butacas         = $session->get('butacas_seleccionadas') ?? [];
-        $entradasCant    = (int) ($session->get('entradas_cantidad') ?? 0);
-        $entradaUnit     = (float) ($session->get('entrada_precio_unit') ?? 0);
-        $entradasEs4D    = (bool) ($session->get('entradas_es_4d') ?? false);
-        $entradasTotal   = (float) ($session->get('entradas_total') ?? 0);
-
-                // 3. Datos de los Combos elegidos
-                $combosDetalle = [];
-                $combosSeleccionados = $session->get('combos_seleccionados') ?? [];
-                if (!empty($combosSeleccionados) && is_array($combosSeleccionados)) {
-                    $idsCombos = array_keys($combosSeleccionados);
-                    $combosDb = $db->table('combo')
-                        ->whereIn('id_combo', $idsCombos)
-                        ->get()
-                        ->getResultArray();
-        
-                    foreach ($combosDb as $c) {
-                        $id   = (int) $c['id_combo'];
-                        $cant = (int) ($combosSeleccionados[$id] ?? 1);
-                        $c['cantidad'] = $cant;
-                        $c['subtotal'] = (float) $c['precio'] * $cant;
-                        $combosDetalle[] = $c;
-                    }
-                }
-                $combosTotal = (float) ($session->get('combos_total') ?? 0);
-        
-        // 4. Suma Total Final
-        $totalGeneral = $entradasTotal + $combosTotal;
+        // Verificamos si es personal del cine (por rol en sesión o por ?admin=true en la URL)
+        $rolUsuario     = $session->get('rol') ?? 'Cliente';
+        $esAdminUrl     = $this->request->getGet('admin') === 'true';
+        $esPersonalCine = $esAdminUrl || in_array(strtolower($rolUsuario), ['admin', 'administrador', 'empleado', 'boleteria']);
 
         $data = [
-            'pagos' => $this->pagoModel->findAll(),
-            'resumen' => [
-                'funcion'        => $funcionDetalle,
-                'butacas'        => $butacas,
-                'entradas_cant'  => $entradasCant,
-                'entrada_unit'   => $entradaUnit,
-                'entradas_es_4d' => $entradasEs4D,
-                'entradas_total' => $entradasTotal,
-                'combos'         => $combosDetalle,
-                'combos_total'   => $combosTotal,
-                'total_general'  => $totalGeneral,
-            ]
+            'esPersonalCine' => $esPersonalCine,
+            'rolUsuario'     => $rolUsuario,
+            'pagos'          => $esPersonalCine ? $this->pagoModel->findAll() : [],
+            'resumen'        => $this->pagoModel->obtenerResumenDesdeSesion($session),
         ];
 
         return view('Pago/index', $data); 
     }
-    /**
-     * Muestra el formulario alternativo para crear un pago.
-     * Nota: Mantenido por compatibilidad estructural del sistema.
-     */
+
     public function nuevo()
     {
-        return view('Pago/form');
+        $data = [
+            'resumen' => $this->pagoModel->obtenerResumenDesdeSesion(session()),
+        ];
+
+        return view('Pago/form', $data);
     }
 
-    /**
-     * Procesa el formulario enviado por el cliente, inserta la orden en la BD
-     * y retorna de forma segura limpiando la sesión local del carrito.
-     */
     public function guardarWeb()
     {
         $metodoPago = $this->request->getPost('metodo_pago');
+        $estado     = ($metodoPago === 'efectivo') ? 'Pendiente' : 'Pagado';
 
-        // Si paga en efectivo (boletería) queda Pendiente; si paga con tarjeta o MP queda Pagado
-        $estado = ($metodoPago === 'efectivo') ? 'Pendiente' : 'Pagado';
+        // Obtenemos el total real desde el modelo para evitar manipulación desde el navegador
+        $resumen = $this->pagoModel->obtenerResumenDesdeSesion(session());
 
         $data = [
-            'monto'       => $this->request->getPost('monto'),
+            'monto'       => $resumen['total_redondeado'],
             'moneda'      => $this->request->getPost('moneda'),
             'metodo_pago' => $metodoPago,
             'estado'      => $estado,
-            // Usuario que hizo el pago (el de la sesión), para que el admin lo vea en el dashboard
             'id_usuario'  => (int) session()->get('id') ?: null,
         ];
-
 
         if ($this->pagoModel->insert($data)) {
             // Limpiamos el carrito de la sesión tras confirmar el pago
@@ -128,35 +72,24 @@ class Pago extends BaseController
                 'entradas_total', 'combos_seleccionados', 'combos_total'
             ]);
 
-            return redirect()->to(base_url('funcion'))->with('success', '¡Su pago ha sido registrado con éxito! Disfrute la función.');
-        }
-
-        return redirect()->back()->withInput()->with('errors', $this->pagoModel->errors());
-    
-
-        if ($this->pagoModel->insert($data)) {
-            // Guardamos una señal flash temporal que el JavaScript de la vista leerá para vaciar el localStorage
             session()->setFlashdata('clear_cart', true);
-            
-            // Redirección fluida y segura a la cartelera pública del cine con mensaje de éxito
-            return redirect()->to(base_url('cartelera'))->with('success', '¡Su pago ha sido registrado con éxito! Disfrute la función.');
+
+            return redirect()->to(base_url('funcion'))->with('success', '¡Su pago ha sido registrado con éxito! Disfrute la función.');
         }
 
         return redirect()->back()->withInput()->with('errors', $this->pagoModel->errors());
     }
 
-    /**============
-     * OBTENER TODOS LOS PAGOS VIA API
-     */
+    // =========================================================================
+    // ENDPOINTS API REST
+    // =========================================================================
+
     public function apiIndex()
     {
         $pagos = $this->pagoModel->findAll();
         return $this->respond($pagos, 200);
     }
 
-    /**
-     * OBTENER UN PAGO POR SU ID
-     */
     public function show($id = null)
     {
         $pago = $this->pagoModel->find($id);
@@ -168,9 +101,6 @@ class Pago extends BaseController
         return $this->respond($pago, 200);
     }
 
-    /**
-     * REGISTRAR UN NUEVO PAGO VIA API
-     */
     public function create()
     {
         $data = [
@@ -191,9 +121,6 @@ class Pago extends BaseController
         ], 201);
     }
 
-    /**
-     * ACTUALIZA EL ESTADO DE UN PAGO VIA API
-     */
     public function update($id = null)
     {
         if (!$this->pagoModel->find($id)) {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 25-11-2026 a las 21:30:11
+-- Tiempo de generación: 27-11-2026 a las 18:50:18
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -286,7 +286,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `last_name`, `email`, `password`, `cuil`, `role`, `created_at`, `updated_at`) VALUES
 (1, 'Juan', 'Elias', 'juanelias@alumnos.itr3.edu.ar', '$2y$10$x2lWXR.bTaFrWYFaTS4b2es1C0aCjn6RlVucFlO4MwW8YxlsS8xuO', '12345678912', 'ADMINISTRADOR', '2026-10-30 23:04:27', '2026-10-30 23:04:27'),
-(2, 'Joaquin', 'Carranza', 'joaquincarranza@alumnos.itr3.edu.ar', '$2y$10$MHx7lAEg7Tur1rWGp.xbo.qkSH7HlnfaXwAbqdgzch1EdUhnz5V8m', '12121212121', 'CLIENTE', '2026-11-02 21:59:52', '2026-11-02 21:59:52');
+(2, 'Joaquin', 'Carranza', 'joaquincarranza@alumnos.itr3.edu.ar', '$2y$10$MHx7lAEg7Tur1rWGp.xbo.qkSH7HlnfaXwAbqdgzch1EdUhnz5V8m', '12121212121', 'CLIENTE', '2026-11-02 21:59:52', '2026-11-02 21:59:52'),
+(3, 'esteban', 'martinez', 'estebanmartinez@gmail.com', '$2y$10$fJQa52RDkgyhpOx5Q7qP5.EIsalZiE49kFeHYXNRn/bhtNiyQO936', '12222211111', 'EMPLEADO', '2026-11-27 17:29:29', '2026-11-27 17:30:04');
 
 --
 -- Índices para tablas volcadas
@@ -429,7 +430,7 @@ ALTER TABLE `salas`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas

@@ -22,7 +22,7 @@
                         <label class="form-label fw-bold">Monto Total a Pagar:</label>
                         <div class="input-group">
                             <span class="input-group-text">$</span>
-                            <input type="number" id="monto_input" name="monto" class="form-control bg-white" value="<?= round($resumen['total_general'] ?? 0) ?>" readonly required>
+                            <input type="number" id="monto_input" name="monto" class="form-control bg-white" value="<?= esc($resumen['total_redondeado']) ?>" readonly required>
                         </div>
                         <small class="text-muted">Este valor se calcula sumando tus entradas y combos seleccionados.</small>
                     </div>
@@ -62,5 +62,6 @@
 
 </body>
 </html>
+
 
 
